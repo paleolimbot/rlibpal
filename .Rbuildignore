@@ -1,2 +1,3 @@
 ^rlibpal\.Rproj$
 ^\.Rproj\.user$
+^src/Makevars$
