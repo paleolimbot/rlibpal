@@ -3,6 +3,11 @@ define([pkgversion], esyscmd([sh -c "grep Version: DESCRIPTION | cut -d' ' -f2 |
 AC_INIT(rlibpal, [pkgversion], dewey@fishandwhistle.net)
 AC_CONFIG_SRCDIR(src/rlibpal.cpp)
 
+# the config header is used for libpal
+AC_CONFIG_HEADER([config.h])
+LIBPAL_VERSION_NUM="020"
+AC_SUBST(LIBPAL_VERSION_NUM)
+
 # find R home and set correct compiler + flags
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -23,9 +28,6 @@ AC_MSG_NOTICE([CC: ${CC}])
 AC_MSG_NOTICE([CXX: ${CXX}])
 
 AC_MSG_NOTICE([${PACKAGE_NAME}: ${PACKAGE_VERSION}])
-
-# TODO must set an include directory for libpal that is more flexible
-AC_SUBST([PKG_CPPFLAGS],["${PKG_CPPFLAGS} -I/Users/dewey/d/rdevel/rlibpal/src/includes"])
 
 GEOS_CONFIG="geos-config"
 
@@ -104,7 +106,7 @@ else
 fi
 
 
-AC_SUBST([PKG_CPPFLAGS],["${PKG_CPPFLAGS} ${GEOS_CPPFLAGS}"])
+AC_SUBST([PKG_CPPFLAGS],["${PKG_CPPFLAGS} ${GEOS_CPPFLAGS} -DHAVE_CONFIG_H"])
 AC_SUBST([PKG_LIBS],["${PKG_LIBS} ${GEOS_LIBS} ${GEOS_CLIBS}"])
 
 # honor PKG_xx overrides
@@ -267,5 +269,5 @@ AC_SUBST(PKG_CPPFLAGS)
 AC_MSG_NOTICE([PKG_LIBS: ${PKG_LIBS}])
 AC_SUBST(PKG_LIBS)
 
-AC_CONFIG_FILES(src/Makevars)
+AC_CONFIG_FILES([src/Makevars src/config.h:config.h])
 AC_OUTPUT

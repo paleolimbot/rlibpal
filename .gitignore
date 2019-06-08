@@ -5,3 +5,4 @@ config.log
 config.status
 .DS_Store
 autom4te.cache
+config.h
