@@ -1,3 +1,4 @@
+#include <R.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -172,19 +173,19 @@ namespace pal {
             case pal::DEGREE:
                 switch (to){
                     case pal::PIXEL:
-                        fprintf (stderr, "Degree to pixel not yet implemented");
+                        REprintf("Degree to pixel not yet implemented");
                         break;
                     case pal::METER:
-                        fprintf (stderr, "Degree to meter not yet implemented");
+                        REprintf("Degree to meter not yet implemented");
                         break;
                     case pal::FOOT:
-                        fprintf (stderr, "Degree to foot not yet implemented");
+                        REprintf("Degree to foot not yet implemented");
                         break;
                 }
                 break;
         }
 
-        fprintf (stderr, "Unable to convert. Unknown units");
+        REprintf("Unable to convert. Unknown units");
         return 0.0;
     }
 

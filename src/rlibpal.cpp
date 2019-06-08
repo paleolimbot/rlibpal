@@ -5,5 +5,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericVector timesTwo(NumericVector x) {
-  return x * 2;
+  pal::Pal obj = pal::Pal();
+
+  return x;
 }

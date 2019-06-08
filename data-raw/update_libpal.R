@@ -42,7 +42,24 @@ file.copy(header_files$path, "data-raw/pal-src")
 # `#include "palexception.h"`
 
 for (file in list.files("data-raw/pal-src", full.names = TRUE)) {
-  read_file(file) %>%
+
+  file_txt <- read_file(file)
+
+  if(str_detect(file_txt, "std::(cout|cerr)")) {
+    file_txt <- file_txt %>%
+      str_replace("^", "#include <Rcpp.h>\n") %>%
+      str_replace_all("std::(cout|cerr)", "Rcpp::R\\1")
+  }
+
+  if(str_detect(file_txt, "printf.*?(stderr|stdout)")) {
+    file_txt <- file_txt %>%
+      str_replace("^", "#include <R.h>\n") %>%
+      str_replace_all("vfprintf\\s*\\(\\s*stdout,\\s*", "Rvprintf(") %>%
+      str_replace_all("vfprintf\\s*\\(\\s*stderr,\\s*", "REvprintf(") %>%
+      str_replace_all("fprintf\\s*\\(\\s*stderr,\\s*", "REprintf(")
+  }
+
+  file_txt %>%
     str_replace_all("#include\\s+<pal/([a-z]+).h>", '#include "\\1.h"') %>%
     str_replace_all("#include\\s+<config.h>", '#include "config.h"') %>%
     write_file(file)

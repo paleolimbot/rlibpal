@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -199,7 +200,7 @@ namespace pal {
     Feat *new_feat = new Feat();
 
 #ifdef _DEBUG_
-    // std::cout << "splitButterFly " << f->nbPoints << " " << pt_a << " " << pt_b <<  std::endl;
+    // Rcpp::Rcout << "splitButterFly " << f->nbPoints << " " << pt_a << " " << pt_b <<  std::endl;
 #endif
 
     new_feat->geom = f->geom;
@@ -214,7 +215,7 @@ namespace pal {
 
 
 #ifdef _DEBUG_FULL_
-    std::cout << "nbpoints:" << new_feat->nbPoints << std::endl;
+    Rcpp::Rcout << "nbpoints:" << new_feat->nbPoints << std::endl;
 #endif
 
     new_feat->x = new double[new_feat->nbPoints];
@@ -229,7 +230,7 @@ namespace pal {
     new_feat->y[0] = cy;
 
 #ifdef _DEBUG_FULL_
-    std::cout << new_feat->x[0] << ";" << new_feat->y[0] << std::endl;
+    Rcpp::Rcout << new_feat->x[0] << ";" << new_feat->y[0] << std::endl;
 #endif
 
     for (i = pt_a, k = 1;i != pt_b;i = (i + 1) % f->nbPoints, k++) {
@@ -242,7 +243,7 @@ namespace pal {
         new_feat->minmax[1] = new_feat->y[k] < new_feat->minmax[1] ? new_feat->y[k] : new_feat->minmax[1];
         new_feat->minmax[3] = new_feat->y[k] > new_feat->minmax[3] ? new_feat->y[k] : new_feat->minmax[3];
 #ifdef _DEBUG_FULL_
-        std::cout << new_feat->x[k] << ";" << new_feat->y[k] << std::endl;
+        Rcpp::Rcout << new_feat->x[k] << ";" << new_feat->y[k] << std::endl;
 #endif
     }
 
@@ -259,12 +260,12 @@ namespace pal {
     }
 
 #ifdef _DEBUG_FULL_
-    std::cout << " go to reorder ..." << std::endl;
+    Rcpp::Rcout << " go to reorder ..." << std::endl;
 #endif
     reorderPolygon (new_feat->nbPoints, new_feat->x, new_feat->y);
 
 #ifdef _DEBUG_FULL_
-    std::cout << "split ok ..." << std::endl;
+    Rcpp::Rcout << "split ok ..." << std::endl;
 #endif
 
 
@@ -298,7 +299,7 @@ void Layer::registerFeature (const char *geom_id, PalGeometry *userGeom, double 
         while (finalQueue->size() > 0) {
             Feat *f = finalQueue->pop_front();
 #ifdef _DEBUG_FULL_
-            std::cout << "f-> popped" << std::endl;
+            Rcpp::Rcout << "f-> popped" << std::endl;
 #endif
             Feature *ft;
 
@@ -316,17 +317,17 @@ void Layer::registerFeature (const char *geom_id, PalGeometry *userGeom, double 
                    continue;
 
 #ifdef _DEBUG_FULL_
-                std::cout << "Create Feat" << std::endl;
+                Rcpp::Rcout << "Create Feat" << std::endl;
 #endif
                 ft = new Feature (f, this, part, nGeom, userGeom);
                 ft->deleteCoord();
 #ifdef _DEBUG_FULL_
-                std::cout << "Feature created" << std::endl;
+                Rcpp::Rcout << "Feature created" << std::endl;
 #endif
                 break;
             default:
 #ifdef _VERBOSE_
-                std::cerr << "Wrong geometry type, should never occurs !!" << std::endl;
+                Rcpp::Rcerr << "Wrong geometry type, should never occurs !!" << std::endl;
 #endif
                 exit (-1);
             }
@@ -350,18 +351,18 @@ void Layer::registerFeature (const char *geom_id, PalGeometry *userGeom, double 
             }
 
 #ifdef _DEBUG_FULL_
-            std::cout << "Feat box : " << bmin[0] << " " <<  bmin[1] << " " <<  bmax[0] << " " << bmax[1] << std::endl;
+            Rcpp::Rcout << "Feat box : " << bmin[0] << " " <<  bmin[1] << " " <<  bmax[0] << " " << bmax[1] << std::endl;
 #endif
 
             rtree->Insert (bmin, bmax, ft);
 
 #ifdef _DEBUG_FULL_
-            std::cout << "feature inserted :-)" << std::endl;
+            Rcpp::Rcout << "feature inserted :-)" << std::endl;
 #endif
 
             delete f;
 #ifdef _DEBUG_FULL_
-            std::cout << "f deleted..." << std::endl;
+            Rcpp::Rcout << "f deleted..." << std::endl;
 #endif
             part++;
         }
@@ -386,7 +387,7 @@ void Layer::setFeatureDistlabel (const char * geom_id, int distlabel) {
     int i;
 
     if (distlabel < 0) {
-        std::cerr << "setFeatureDistlabel :  invalid size : " << distlabel << std::endl;
+        Rcpp::Rcerr << "setFeatureDistlabel :  invalid size : " << distlabel << std::endl;
         throw new PalException::ValueNotInRange();
         return;
     }
@@ -405,7 +406,7 @@ void Layer::setFeatureDistlabel (const char * geom_id, int distlabel) {
             it = it->next;
         }
     } else {
-        std::cerr << "setFeatureDistlabel " << geom_id << " not found" << std::endl;
+        Rcpp::Rcerr << "setFeatureDistlabel " << geom_id << " not found" << std::endl;
         modMutex->unlock();
         throw new PalException::UnknownFeature();
     }
@@ -433,7 +434,7 @@ void Layer::setFeatureLabelSize (const char * geom_id, double label_x, double la
     int i;
 
     if (label_x < 0 || label_y < 0) {
-        std::cerr << "setFeatureLabelSize :  invalid size : " << label_x << ";" << label_y << std::endl;
+        Rcpp::Rcerr << "setFeatureLabelSize :  invalid size : " << label_x << ";" << label_y << std::endl;
         throw new PalException::ValueNotInRange();
         return;
     }
@@ -452,7 +453,7 @@ void Layer::setFeatureLabelSize (const char * geom_id, double label_x, double la
             it = it->next;
         }
     } else {
-        std::cerr << "setFeaturelabelSizeFeature " << geom_id << " not found" << std::endl;
+        Rcpp::Rcerr << "setFeaturelabelSizeFeature " << geom_id << " not found" << std::endl;
         modMutex->unlock();
         throw new PalException::UnknownFeature();
     }

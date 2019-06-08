@@ -1,3 +1,5 @@
+#include <R.h>
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -77,9 +79,9 @@ namespace pal {
 
         int return_value = heap[0];
 
-        //std::cerr << "getBest" << std::endl;
-        //std::cerr << "    key: " << return_value << std::endl;
-        //std::cerr << "   Size: " << size << std::endl;
+        //Rcpp::Rcerr << "getBest" << std::endl;
+        //Rcpp::Rcerr << "    key: " << return_value << std::endl;
+        //Rcpp::Rcerr << "   Size: " << size << std::endl;
 
         size--;
 
@@ -110,9 +112,9 @@ namespace pal {
         if (size == maxsize || key > maxId || key < 0)
             throw InternalException::Full();
 
-        //std::cerr << "insert" << std::endl;
-        //std::cerr << "   key: " << key << std::endl;
-        //std::cerr << "   size: " << size << std::endl;
+        //Rcpp::Rcerr << "insert" << std::endl;
+        //Rcpp::Rcerr << "   key: " << key << std::endl;
+        //Rcpp::Rcerr << "   size: " << size << std::endl;
 
         heap[size] = key;
         pos[key] = size;
@@ -132,15 +134,15 @@ namespace pal {
             return;
         int i = pos[key];
 
-        //std::cerr << "Remove " << key << std::endl;
-        //std::cerr << "   pos[key]: " << i << std::endl;
+        //Rcpp::Rcerr << "Remove " << key << std::endl;
+        //Rcpp::Rcerr << "   pos[key]: " << i << std::endl;
 
         if (i >= 0) {
 
-            //std::cerr << "size:" << size << std::endl;
-            //std::cerr << "heap[size]:" << heap[size] << std::endl;
-            //std::cerr << "pos[heap[size]]:" << pos[heap[size]] << std::endl;
-            //std::cerr << "pos[key]:" << pos[key] << std::endl;
+            //Rcpp::Rcerr << "size:" << size << std::endl;
+            //Rcpp::Rcerr << "heap[size]:" << heap[size] << std::endl;
+            //Rcpp::Rcerr << "pos[heap[size]]:" << pos[heap[size]] << std::endl;
+            //Rcpp::Rcerr << "pos[key]:" << pos[key] << std::endl;
 
             size--;
             pos[heap[size]] = i;
@@ -277,13 +279,13 @@ namespace pal {
     void PriorityQueue::print() {
         int i;
 
-        fprintf (stderr, "Size: %d\nMaxSize: %d\n", size, maxsize);
+        REprintf("Size: %d\nMaxSize: %d\n", size, maxsize);
 
         for (i = 0;i < size;i++) {
             //printf ("key: %7d  ->  index: %7d -> key: %7d   p: %7d\n", i, pos[i], heap[pos[i]], p[pos[i]]);
-            fprintf (stderr, "id: %7d  ->  key: %7d -> id: %7d   p: %7f\n", i, heap[i], pos[heap[i]], p[i]);
+            REprintf("id: %7d  ->  key: %7d -> id: %7d   p: %7f\n", i, heap[i], pos[heap[i]], p[i]);
         }
-        fprintf (stderr, "\n");
+        REprintf("\n");
 
     }
 

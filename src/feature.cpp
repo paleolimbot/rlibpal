@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -90,9 +91,9 @@ namespace pal {
         this->type = feat->type;
 
 #ifdef _DEBUG_
-        std::cout << "Corrdinates for " << layer->name << "/" << uid << " :" << nbPoints << " pts" << std::endl;
+        Rcpp::Rcout << "Corrdinates for " << layer->name << "/" << uid << " :" << nbPoints << " pts" << std::endl;
         for (i = 0;i < nbPoints;i++) {
-            std::cout << x[i] << ";" << y[i] << std::endl;
+            Rcpp::Rcout << x[i] << ";" << y[i] << std::endl;
         }
 #endif
 
@@ -105,7 +106,7 @@ namespace pal {
 
     Feature::~Feature() {
         if (x || y) {
-            std::cout << "Warning: coordinates not released: " << layer->name << "/" << uid << std::endl;
+            Rcpp::Rcout << "Warning: coordinates not released: " << layer->name << "/" << uid << std::endl;
         }
 
         if (uid) {
@@ -116,7 +117,7 @@ namespace pal {
             int i;
             for (i = 0;i < nbSelfObs;i++) {
                 if (selfObs[i]->x || selfObs[i]->y) {
-                    std::cout << "Warning: hole coordinates not released" << std::endl;
+                    Rcpp::Rcout << "Warning: hole coordinates not released" << std::endl;
                 }
                 delete selfObs[i];
             }
@@ -138,7 +139,7 @@ namespace pal {
     int Feature::setPositionForPoint (double x, double y, double scale, LabelPosition ***lPos, double delta_width) {
 
 #ifdef _DEBUG_
-        std::cout << "SetPosition (point) : " << layer->name << "/" << uid << std::endl;
+        Rcpp::Rcout << "SetPosition (point) : " << layer->name << "/" << uid << std::endl;
 #endif
 
         int dpi = layer->pal->dpi;
@@ -159,7 +160,7 @@ namespace pal {
 
         int nbp = layer->pal->point_p;
 
-        //std::cout << "Nbp : " << nbp << std::endl;
+        //Rcpp::Rcout << "Nbp : " << nbp << std::endl;
 
         int i;
         int icost = 0;
@@ -204,7 +205,7 @@ namespace pal {
 
 
         if (gamma1 == 0 || gamma2 == 0) {
-            std::cout << "Oups... label size error..." << std::endl;
+            Rcpp::Rcout << "Oups... label size error..." << std::endl;
         }
 
         *lPos = new LabelPosition *[nbp];
@@ -277,7 +278,7 @@ namespace pal {
 // TODO work with squared distance by remonving call to sqrt or dist_euc2d
     int Feature::setPositionForLine (double scale, LabelPosition ***lPos, PointSet *mapShape, double delta_width) {
 #ifdef _DEBUG_
-        std::cout << "SetPosition (line) : " << layer->name << "/" << uid << std::endl;
+        Rcpp::Rcout << "SetPosition (line) : " << layer->name << "/" << uid << std::endl;
 #endif
         int i;
         int dpi = layer->pal->dpi;
@@ -321,7 +322,7 @@ namespace pal {
 
         PointSet * line = mapShape;
 #ifdef _DEBUG_FULL_
-        std::cout << "New line of " << line->nbPoints << " points with label " << xrm << "x" << yrm << std::endl;
+        Rcpp::Rcout << "New line of " << line->nbPoints << " points with label " << xrm << "x" << yrm << std::endl;
 #endif
 
         nbPoints = line->nbPoints;
@@ -348,8 +349,8 @@ namespace pal {
         nbls = (int) (ll / xrm); // ratio bw line length and label width
 
 #ifdef _DEBUG_FULL_
-        std::cout << "line length :" << ll << std::endl;
-        std::cout << "nblp :" << nbls << std::endl;
+        Rcpp::Rcout << "line length :" << ll << std::endl;
+        Rcpp::Rcout << "nblp :" << nbls << std::endl;
 #endif
 
         dist = (ll - xrm);
@@ -371,7 +372,7 @@ namespace pal {
         i = 0;
         //for (i=0;i<nbp;i++){
 #ifdef _DEBUG_FULL_
-        std::cout << l << " / " << ll - xrm << std::endl;
+        Rcpp::Rcout << l << " / " << ll - xrm << std::endl;
 #endif
         while (l < ll - xrm) {
             // => bx, by
@@ -394,9 +395,9 @@ namespace pal {
 
 
             if ( (vabs (ey - by) < EPSILON) && (vabs (ex - bx) < EPSILON)) {
-                std::cout << "EPSILON " << EPSILON << std::endl;
-                std::cout << "b: " << bx << ";" << by << std::endl;
-                std::cout << "e: " << ex << ";" << ey << std::endl;
+                Rcpp::Rcout << "EPSILON " << EPSILON << std::endl;
+                Rcpp::Rcout << "b: " << bx << ";" << by << std::endl;
+                Rcpp::Rcout << "e: " << ex << ";" << ey << std::endl;
                 alpha = 0.0;
             } else
                 alpha = atan2 (ey - by, ex - bx);
@@ -404,7 +405,7 @@ namespace pal {
             beta = alpha + M_PI / 2;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "  Create new label" << std::endl;
+            Rcpp::Rcout << "  Create new label" << std::endl;
 #endif
             if (layer->arrangement == P_LINE_AROUND) {
                 positions->push_back (new LabelPosition (i, bx + cos (beta) *distlabel , by + sin (beta) *distlabel, xrm, yrm, alpha, cost, this)); // Line
@@ -460,7 +461,7 @@ namespace pal {
     int Feature::setPositionForPolygon (double scale, LabelPosition ***lPos, PointSet *mapShape, double delta_width) {
 
 #ifdef _DEBUG_
-        std::cout << "SetPosition (polygon) : " << layer->name << "/" << uid << std::endl;
+        Rcpp::Rcout << "SetPosition (polygon) : " << layer->name << "/" << uid << std::endl;
 #endif
 
         int i;
@@ -537,19 +538,19 @@ namespace pal {
                     CHullBox *box = boxes[bbid];
 
                     if ( (box->length * box->width) > (xmax - xmin) * (ymax - ymin) *5) {
-                        std::cout << "Very Large BBOX (should never occurs : bug-report please)" << std::endl;
-                        std::cout << "   Box size:  " << box->length << "/" << box->width << std::endl;
-                        std::cout << "   Alpha:     " << alpha << "   " << alpha * 180 / M_PI << std::endl;
-                        std::cout << "   Dx;Dy:     " << dx << "   " << dy  << std::endl;
-                        std::cout << "   LabelSizerm: " << xrm << "   " << yrm  << std::endl;
-                        std::cout << "   LabelSizeUn: " << label_x << "   " << label_y << std::endl;
+                        Rcpp::Rcout << "Very Large BBOX (should never occurs : bug-report please)" << std::endl;
+                        Rcpp::Rcout << "   Box size:  " << box->length << "/" << box->width << std::endl;
+                        Rcpp::Rcout << "   Alpha:     " << alpha << "   " << alpha * 180 / M_PI << std::endl;
+                        Rcpp::Rcout << "   Dx;Dy:     " << dx << "   " << dy  << std::endl;
+                        Rcpp::Rcout << "   LabelSizerm: " << xrm << "   " << yrm  << std::endl;
+                        Rcpp::Rcout << "   LabelSizeUn: " << label_x << "   " << label_y << std::endl;
                         continue;
                     }
 
 #ifdef _DEBUG_FULL_
-                    std::cout << "New BBox : " << bbid << std::endl;
+                    Rcpp::Rcout << "New BBox : " << bbid << std::endl;
                     for (i = 0;i < 4;i++) {
-                        std::cout << box->x[i] << "\t" << box->y[i] << std::endl;
+                        Rcpp::Rcout << box->x[i] << "\t" << box->y[i] << std::endl;
                     }
 #endif
 
@@ -656,28 +657,28 @@ namespace pal {
         delete shapes_final;
 
 #ifdef _DEBUG_FULL_
-        std::cout << "NbLabelPosition: " << nbp << std::endl;
+        Rcpp::Rcout << "NbLabelPosition: " << nbp << std::endl;
 #endif
         return nbp;
     }
 
     void Feature::print() {
         int i, j;
-        std::cout << "Geometry id : " << uid << std::endl;
-        std::cout << "Type: " << type << std::endl;
+        Rcpp::Rcout << "Geometry id : " << uid << std::endl;
+        Rcpp::Rcout << "Type: " << type << std::endl;
         if (x && y) {
             for (i = 0;i < nbPoints;i++)
-                std::cout << x[i] << ", " << y[i] << std::endl;
-            std::cout << "Obstacle: " << nbSelfObs << std::endl;
+                Rcpp::Rcout << x[i] << ", " << y[i] << std::endl;
+            Rcpp::Rcout << "Obstacle: " << nbSelfObs << std::endl;
             for (i = 0;i < nbSelfObs;i++) {
-                std::cout << "  obs " << i << std::endl;
+                Rcpp::Rcout << "  obs " << i << std::endl;
                 for (j = 0;j < selfObs[i]->nbPoints;j++) {
-                    std::cout << selfObs[i]->x[j] << ";" << selfObs[i]->y[j] << std::endl;
+                    Rcpp::Rcout << selfObs[i]->x[j] << ";" << selfObs[i]->y[j] << std::endl;
                 }
             }
         }
 
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
     }
 
     int Feature::setPosition (double scale, LabelPosition ***lPos,
@@ -762,7 +763,7 @@ namespace pal {
         accessMutex->lock();
         layer->pal->tmpTime -= clock();
         if (!x && !y) {
-            //std::cout << "fetch feat " << layer->name << "/" << uid << std::endl;
+            //Rcpp::Rcout << "fetch feat " << layer->name << "/" << uid << std::endl;
             the_geom = userGeom->getGeosGeometry();
             LinkedList<Feat*> *feats = splitGeom (the_geom, this->uid);
             int id = 0;
@@ -824,7 +825,7 @@ namespace pal {
 
     void Feature::releaseCoordinates() {
         accessMutex->lock();
-        //std::cout << "release (" << currentAccess << ")" << std::endl;
+        //Rcpp::Rcout << "release (" << currentAccess << ")" << std::endl;
         if (x && y && currentAccess == 1) {
             deleteCoord();
             userGeom->releaseGeosGeometry (the_geom);

@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -125,14 +126,14 @@ namespace pal {
     }
 
     void LabelPosition::print() {
-        std::cout << feature->getLayer()->getName() << "/" << feature->getUID() << "/" << id;
-        std::cout << " cost: " << cost;
-        std::cout << " alpha" << alpha << std::endl;
-        std::cout << x[0] << ", " << y[0] << std::endl;
-        std::cout << x[1] << ", " << y[1] << std::endl;
-        std::cout << x[2] << ", " << y[2] << std::endl;
-        std::cout << x[3] << ", " << y[3] << std::endl;
-        std::cout << std::endl;
+        Rcpp::Rcout << feature->getLayer()->getName() << "/" << feature->getUID() << "/" << id;
+        Rcpp::Rcout << " cost: " << cost;
+        Rcpp::Rcout << " alpha" << alpha << std::endl;
+        Rcpp::Rcout << x[0] << ", " << y[0] << std::endl;
+        Rcpp::Rcout << x[1] << ", " << y[1] << std::endl;
+        Rcpp::Rcout << x[2] << ", " << y[2] << std::endl;
+        Rcpp::Rcout << x[3] << ", " << y[3] << std::endl;
+        Rcpp::Rcout << std::endl;
     }
 
     bool LabelPosition::isInConflict (LabelPosition *ls) {
@@ -145,17 +146,17 @@ namespace pal {
         double cp1, cp2;
 
 
-        //std::cout << "Check intersect" << std::endl;
+        //Rcpp::Rcout << "Check intersect" << std::endl;
         for (i = 0;i < 4;i++) {
             i2 = (i + 1) % 4;
             d1 = -1;
             d2 = -1;
-            //std::cout << "new seg..." << std::endl;
+            //Rcpp::Rcout << "new seg..." << std::endl;
             for (j = 0;j < 4;j++) {
                 cp1 = cross_product (x[i], y[i], x[i2], y[i2], ls->x[j], ls->y[j]);
                 if (cp1 > 0) {
                     d1 = 1;
-                    //std::cout << "    cp1: " << cp1 << std::endl;
+                    //Rcpp::Rcout << "    cp1: " << cp1 << std::endl;
                 }
                 cp2 = cross_product (ls->x[i], ls->y[i],
                                      ls->x[i2], ls->y[i2],
@@ -163,7 +164,7 @@ namespace pal {
 
                 if (cp2 > 0) {
                     d2 = 1;
-                    //std::cout << "     cp2 " << cp2 << std::endl;
+                    //Rcpp::Rcout << "     cp2 " << cp2 << std::endl;
                 }
             }
 
@@ -305,7 +306,7 @@ namespace pal {
             amax[1] = feature->getYmax();
         //}
 
-        //std::cout << amin[0] << " " << amin[1] << " " << amax[0] << " " <<  amax[1] << std::endl;
+        //Rcpp::Rcout << amin[0] << " " << amin[1] << " " << amax[0] << " " <<  amax[1] << std::endl;
         obstacles->Search (amin, amax, obstacleCallback, pCost);
 
         cost = pCost->getCost();
@@ -363,7 +364,7 @@ namespace pal {
 
 
     void LabelPosition::setCost (int nblp, LabelPosition **lPos, int max_p, RTree<PointSet*, double, 2, double> *obstacles, double bbx[4], double bby[4]) {
-        //std::cout << "setCost:" << std::endl;
+        //Rcpp::Rcout << "setCost:" << std::endl;
         //clock_t clock_start = clock();
 
         int i;
@@ -371,7 +372,7 @@ namespace pal {
         double normalizer;
         // compute raw cost
 #ifdef _DEBUG_
-        std::cout << "LabelPosition for feat: " << lPos[0]->feature->uid << std::endl;
+        Rcpp::Rcout << "LabelPosition for feat: " << lPos[0]->feature->uid << std::endl;
 #endif
 
         for (i = 0;i < nblp;i++)
@@ -399,7 +400,7 @@ namespace pal {
         // others are set proportionally between best and worst
         for (i = 0;i < max_p;i++) {
 #ifdef _DEBUG_
-            std::cout << "   lpos[" << i << "] = " << lPos[i]->cost;
+            Rcpp::Rcout << "   lpos[" << i << "] = " << lPos[i]->cost;
 #endif
             //if (cost_max - cost_min < EPSILON)
             if (cost_max > EPSILON){
@@ -411,11 +412,11 @@ namespace pal {
             }
 
 #ifdef _DEBUG_
-            std::cout <<  "  ==>  " << lPos[i]->cost << std::endl;
+            Rcpp::Rcout <<  "  ==>  " << lPos[i]->cost << std::endl;
 #endif
         }
         //clock_t clock_2;
-        //std::cout << "AfterSetCostFromPolygon (" << nblp << "x): " << clock_2 = (clock() - clock_1) << std::endl;
+        //Rcpp::Rcout << "AfterSetCostFromPolygon (" << nblp << "x): " << clock_2 = (clock() - clock_1) << std::endl;
     }
 
     LabelPosition::PolygonCostCalculator::PolygonCostCalculator (LabelPosition *lp) : lp(lp) {
@@ -484,7 +485,7 @@ namespace pal {
                 }
             }
             else{
-               std::cout << "this shouldn't occurs !!!" << std::endl;
+               Rcpp::Rcout << "this shouldn't occurs !!!" << std::endl;
             }
         }
     }

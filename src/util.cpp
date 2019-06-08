@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -176,7 +177,7 @@ namespace pal {
         double *inactiveCost = ( (CountContext*) ctx)->inactiveCost;
         if (lp2->isInConflict (lp)) {
 #ifdef _DEBUG_FULL_
-            std::cout <<  "count overlap : " << lp->id << "<->" << lp2->id << std::endl;
+            Rcpp::Rcout <<  "count overlap : " << lp->id << "<->" << lp2->id << std::endl;
 #endif
             (*nbOv) ++;
             *cost += inactiveCost[lp->probFeat] + lp->cost;
@@ -260,7 +261,7 @@ namespace pal {
             f->type = GEOSGeomTypeId (geom);
             break;
         default:
-            std::cout << "Wrong geometry !!" << std::endl;
+            Rcpp::Rcout << "Wrong geometry !!" << std::endl;
         }
 
         if (f->type == GEOS_POLYGON) {
@@ -269,7 +270,7 @@ namespace pal {
                 f->nbHoles = GEOSGetNumInteriorRings (geom);
                 f->holes = new PointSet*[f->nbHoles];
 #ifdef _DEBUG_FULL_
-                std::cout << f->nbHoles << " obstacles !" << std::endl;
+                Rcpp::Rcout << f->nbHoles << " obstacles !" << std::endl;
 #endif
                 for (i = 0;i < f->nbHoles;i++) {
                     f->holes[i] = new PointSet();
@@ -315,7 +316,7 @@ namespace pal {
         double ymin = DBL_MAX;
         double ymax = -DBL_MAX;
 
-        //std::cout << "Label: <" << label << ">    nbPoints : " << nbPoints << std::endl;
+        //Rcpp::Rcout << "Label: <" << label << ">    nbPoints : " << nbPoints << std::endl;
         f->x = new double[f->nbPoints];
         f->y = new double[f->nbPoints];
 
@@ -323,7 +324,7 @@ namespace pal {
 
 
 #ifdef _DEBUG_FULL_
-        std::cout << "ExtractXY (" << f->nbPoints << " points)" << std::endl;
+        Rcpp::Rcout << "ExtractXY (" << f->nbPoints << " points)" << std::endl;
 #endif
         for (i = 0;i < f->nbPoints;i++) {
             GEOSCoordSeq_getX (coordSeq, i, &f->x[i]);
@@ -338,7 +339,7 @@ namespace pal {
             pts[i] = i;
 
 #ifdef _DEBUG_FULL_
-            std::cout << f->x[i] << ";" << f->y[i] << std::endl;
+            Rcpp::Rcout << f->x[i] << ";" << f->y[i] << std::endl;
 #endif
         }
 
@@ -365,7 +366,7 @@ namespace pal {
 
         if (new_nbPoints < f->nbPoints) {
 #ifdef _DEBUG_FULL_
-            std::cout << "Sans Doublon: (" << new_nbPoints << ")" << std::endl;
+            Rcpp::Rcout << "Sans Doublon: (" << new_nbPoints << ")" << std::endl;
 #endif
             double *new_x = new double[new_nbPoints];
             double *new_y = new double[new_nbPoints];
@@ -374,7 +375,7 @@ namespace pal {
                     new_x[j] = f->x[i];
                     new_y[j] = f->y[i];
 #ifdef _DEBUG_FULL_
-                    std::cout << new_x[j] << ";" << new_y[j] << std::endl;
+                    Rcpp::Rcout << new_x[j] << ";" << new_y[j] << std::endl;
 #endif
                     j++;
                 }
@@ -414,12 +415,12 @@ namespace pal {
 
         while (simpleGeometries->size() > 0) {
             geom = simpleGeometries->pop_front();
-            //std::cout << "    split->typeid : " << geom->getGeometryTypeId() << std::endl;
+            //Rcpp::Rcout << "    split->typeid : " << geom->getGeometryTypeId() << std::endl;
             switch (GEOSGeomTypeId (geom)) {
             case GEOS_MULTIPOINT:
             case GEOS_MULTILINESTRING:
             case GEOS_MULTIPOLYGON:
-                std::cerr << "MUTLI geometry should never occurs here" << std::endl;
+                Rcpp::Rcerr << "MUTLI geometry should never occurs here" << std::endl;
                 break;
             case GEOS_POINT:
             case GEOS_LINESTRING:
@@ -440,21 +441,21 @@ namespace pal {
                 // BUGFIX #8 by maxence -- 11/03/2008
                 if (f->nbPoints >= 3) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "new polygon for " << geom_id << " (" << f->nbPoints << " pts)" << std::endl;
+                    Rcpp::Rcout << "new polygon for " << geom_id << " (" << f->nbPoints << " pts)" << std::endl;
                     for (i = 0;i < f->nbPoints;i++) {
-                        std::cout << f->x[i] << " ; " << f->y[i] << std::endl;
+                        Rcpp::Rcout << f->x[i] << " ; " << f->y[i] << std::endl;
                     }
 #endif
                     if (reorderPolygon (f->nbPoints, f->x, f->y) == 0) {
 #ifdef _DEBUG_FULL_
-                        std::cout << "reordered: " << geom_id << " (" << f->nbPoints << " pts)" << std::endl;
+                        Rcpp::Rcout << "reordered: " << geom_id << " (" << f->nbPoints << " pts)" << std::endl;
                         for (i = 0;i < f->nbPoints;i++) {
-                            std::cout << f->x[i] << " ; " << f->y[i] << std::endl;
+                            Rcpp::Rcout << f->x[i] << " ; " << f->y[i] << std::endl;
                         }
 #endif
                         fCoordQueue->push_back (f);
                     } else {
-                        std::cout << __FILE__ << ":" << __LINE__ << " Unable to reorder the polygon ..." << std::endl;
+                        Rcpp::Rcout << __FILE__ << ":" << __LINE__ << " Unable to reorder the polygon ..." << std::endl;
                         for (i = 0;i < f->nbHoles;i++)
                             delete f->holes[i];
                         delete f->holes;
@@ -463,7 +464,7 @@ namespace pal {
                         delete f;
                     }
                 } else {
-                    std::cout << "Geometry " << geom_id << " is invalid (less than 3 real points)" << std::endl;
+                    Rcpp::Rcout << "Geometry " << geom_id << " is invalid (less than 3 real points)" << std::endl;
                     for (i = 0;i < f->nbHoles;i++)
                         delete f->holes[i];
                     delete f->holes;
@@ -487,9 +488,9 @@ namespace pal {
 
             if (f->type == GEOS_POLYGON) {
 #ifdef _DEBUG_FULL_
-                std::cout << "New feature coordinates:" << std::endl;
+                Rcpp::Rcout << "New feature coordinates:" << std::endl;
                 for (i = 0;i < f->nbPoints;i++)
-                    std::cout << f->x[i] << ";" << f->y[i] << std::endl;
+                    Rcpp::Rcout << f->x[i] << ";" << f->y[i] << std::endl;
 #endif
 
                 // Butterfly detector
@@ -515,7 +516,7 @@ namespace pal {
                         l = (k + 1) % f->nbPoints;
                         l2 = (l + 1) % f->nbPoints;
 
-                        //std::cout << "   " << i << "->" << j << "     " << k << "->" << l << std::endl;
+                        //Rcpp::Rcout << "   " << i << "->" << j << "     " << k << "->" << l << std::endl;
                         if (computeSegIntersectionExt (f->x[i], f->y[i],
                                                        f->x[j], f->y[j],
                                                        f->x[j2], f->y[j2],
@@ -524,7 +525,7 @@ namespace pal {
                                                        f->x[l2], f->y[l2],
                                                        &tmpX, &tmpY)) {
 #ifdef _DEBUG_FULL_
-                            std::cout << i << "->" << j << "  intersect " << k << "->" << l << std::endl;
+                            Rcpp::Rcout << i << "->" << j << "  intersect " << k << "->" << l << std::endl;
 #endif
                             pt_a = i;
                             pt_b = k;

@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -115,11 +116,11 @@ namespace pal {
     bool isSegIntersects (double x1, double y1, double x2, double y2,  // 1st segment
                           double x3, double y3, double x4, double y4) { // 2nd segment
         /*
-           std::cout << "SegInrersect ? " << std::endl;
-           std::cout << "   cp1 : " << cross_product (x1, y1, x2, y2, x3, y3) << std::endl;
-           std::cout << "   cp2 : " << cross_product (x1, y1, x2, y2, x4, y4) << std::endl;
-           std::cout << "   cp3 : " << cross_product (x3, y3, x4, y4, x1, y1) << std::endl;
-           std::cout << "   cp4 : " << cross_product (x3, y3, x4, y4, x2, y2) << std::endl;
+           Rcpp::Rcout << "SegInrersect ? " << std::endl;
+           Rcpp::Rcout << "   cp1 : " << cross_product (x1, y1, x2, y2, x3, y3) << std::endl;
+           Rcpp::Rcout << "   cp2 : " << cross_product (x1, y1, x2, y2, x4, y4) << std::endl;
+           Rcpp::Rcout << "   cp3 : " << cross_product (x3, y3, x4, y4, x1, y1) << std::endl;
+           Rcpp::Rcout << "   cp4 : " << cross_product (x3, y3, x4, y4, x2, y2) << std::endl;
         */
         return (cross_product (x1, y1, x2, y2, x3, y3) * cross_product (x1, y1, x2, y2, x4, y4) < 0
                 && cross_product (x3, y3, x4, y4, x1, y1) * cross_product (x3, y3, x4, y4, x2, y2) < 0);
@@ -143,7 +144,7 @@ namespace pal {
 
         if (cp1 == 0 && cp2 == 0 && cp3 == 0 && cp4 == 0) {
 #ifdef _DEBUG_FULL_
-            std::cout << "coolineaire..." << std::endl;
+            Rcpp::Rcout << "coolineaire..." << std::endl;
 #endif
             return false;
         }
@@ -151,7 +152,7 @@ namespace pal {
         // 1 ter
         if (cp1 == 0 && cp3 == 0) {
 #ifdef _DEBUG_FULL_
-            std::cout << "cp1 = cp3 = 0 => ignoring..." << std::endl;
+            Rcpp::Rcout << "cp1 = cp3 = 0 => ignoring..." << std::endl;
 #endif
             return false;
         }
@@ -159,7 +160,7 @@ namespace pal {
         // 1 bis
         if (cp1 == 0 && cp4 == 0) {
 #ifdef _DEBUG_FULL_
-            std::cout << "cp1 = cp4 = 0 => ignoring..." << std::endl;
+            Rcpp::Rcout << "cp1 = cp4 = 0 => ignoring..." << std::endl;
 #endif
             return false;
         }
@@ -167,7 +168,7 @@ namespace pal {
         // 1 bis
         if (cp2 == 0 && cp3 == 0) {
 #ifdef _DEBUG_FULL_
-            std::cout << "cp2 = cp3 = 0 => ignoring..." << std::endl;
+            Rcpp::Rcout << "cp2 = cp3 = 0 => ignoring..." << std::endl;
 #endif
             return false;
         }
@@ -175,7 +176,7 @@ namespace pal {
         // 2bis and 3bis
         if (cp1 == 0 || cp3 == 0) {
 #ifdef _DEBUG_FULL_
-            std::cout << "skip..." << std::endl;
+            Rcpp::Rcout << "skip..." << std::endl;
 #endif
             return false;
         }
@@ -458,15 +459,15 @@ namespace pal {
         else if (pts[cHull[0]] < pts[cHull[1]] && pts[cHull[1]] > pts[cHull[2]] && pts[cHull[2]] < pts[cHull[0]])
             inc = 1;
         else {
-            std::cout << "Warning wrong cHull -> geometry: " << nbPoints << std::endl;
+            Rcpp::Rcout << "Warning wrong cHull -> geometry: " << nbPoints << std::endl;
             for (i = 0;i < nbPoints;i++) {
-                std::cout << x[i] << ";" << y[i] << std::endl;
+                Rcpp::Rcout << x[i] << ";" << y[i] << std::endl;
             }
-            std::cout << "hull : " << cHullSize << std::endl;
+            Rcpp::Rcout << "hull : " << cHullSize << std::endl;
             for (i = 0;i < cHullSize;i++) {
-                std::cout << pts[cHull[i]] << " ";
+                Rcpp::Rcout << pts[cHull[i]] << " ";
             }
-            std::cout << std::endl;
+            Rcpp::Rcout << std::endl;
             delete[] cHull;
             delete[] pts;
             return -1;

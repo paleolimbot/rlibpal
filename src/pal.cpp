@@ -1,3 +1,5 @@
+#include <R.h>
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -66,13 +68,13 @@ namespace pal {
     void geosError (const char *fmt, ...) {
         va_list list;
         va_start (list, fmt);
-        vfprintf (stderr, fmt, list);
+        REvprintf(fmt, list);
     }
 
     void geosNotice (const char *fmt, ...) {
         va_list list;
         va_start (list, fmt);
-        vfprintf (stdout, fmt, list);
+        Rvprintf(fmt, list);
     }
 
     Pal::Pal() {
@@ -102,8 +104,8 @@ namespace pal {
 
         this->map_unit = pal::METER;
 
-        std::cout.precision (12);
-        std::cerr.precision (12);
+        Rcpp::Rcout.precision (12);
+        Rcpp::Rcerr.precision (12);
 
         tmpTime = 0;
     }
@@ -139,7 +141,7 @@ namespace pal {
 
     Pal::~Pal() {
 
-        std::cout << "Acces/Concvert time: " << (double) tmpTime / CLOCKS_PER_SEC << std::endl;
+        Rcpp::Rcout << "Acces/Concvert time: " << (double) tmpTime / CLOCKS_PER_SEC << std::endl;
 
         lyrsMutex->lock();
         while (layers->size() > 0) {
@@ -161,9 +163,9 @@ namespace pal {
         lyrsMutex->lock();
 
 #ifdef _DEBUG_
-        std::cout << "Pal::addLayer" << std::endl;
-        std::cout << "lyrName:" << lyrName << std::endl;
-        std::cout << "nbLayers:" << layers->size() << std::endl;
+        Rcpp::Rcout << "Pal::addLayer" << std::endl;
+        Rcpp::Rcout << "lyrName:" << lyrName << std::endl;
+        Rcpp::Rcout << "nbLayers:" << layers->size() << std::endl;
 #endif
 
         for (std::list<Layer*>::iterator it = layers->begin(); it != layers->end();it++) {
@@ -218,7 +220,7 @@ namespace pal {
 
 
 #ifdef _DEBUG_FULL_
-        std::cout << "extract feat : " << ft_ptr->layer->name << "/" << ft_ptr->uid << std::endl;
+        Rcpp::Rcout << "extract feat : " << ft_ptr->layer->name << "/" << ft_ptr->uid << std::endl;
 #endif
 
         // all feature which are obstacle will be inserted into obstacles
@@ -248,7 +250,7 @@ namespace pal {
                     context->obstacles->Insert (min, max, ft_ptr->selfObs[i]);
 
                     if (!ft_ptr->selfObs[i]->holeOf) {
-                        std::cout << "ERROR: SHOULD HAVE A PARENT!!!!!" << std::endl;
+                        Rcpp::Rcout << "ERROR: SHOULD HAVE A PARENT!!!!!" << std::endl;
                     }
                 }
 
@@ -321,7 +323,7 @@ namespace pal {
                     Feats *ft = feats->pop_front();
 
 #ifdef _DEBUG_
-                    std::cout << "Compute candidates for feat " <<  ft->feature->layer->name << "/" << ft->feature->uid << std::endl;
+                    Rcpp::Rcout << "Compute candidates for feat " <<  ft->feature->layer->name << "/" << ft->feature->uid << std::endl;
 #endif
                     ft->nblp = ft->feature->setPosition (context->scale, & (ft->lPos), context->bbox_min, context->bbox_max, ft->shape, context->candidates
 #ifdef _EXPORT_MAP_
@@ -337,12 +339,12 @@ namespace pal {
                         ft->priority = context->priority;
                         context->fFeats->push_back (ft);
 #ifdef _DEBUG_
-                        std::cout << ft->nblp << " labelPositions for feature : " << ft->feature->layer->name << "/" << ft->feature->uid << std::endl;
+                        Rcpp::Rcout << ft->nblp << " labelPositions for feature : " << ft->feature->layer->name << "/" << ft->feature->uid << std::endl;
 #endif
                     } else {
                         // Others are deleted
 #ifdef _VERBOSE_
-                        std::cout << "Unable to generate labelPosition for feature : " << ft->feature->layer->name << "/" << ft->feature->uid << std::endl;
+                        Rcpp::Rcout << "Unable to generate labelPosition for feature : " << ft->feature->layer->name << "/" << ft->feature->uid << std::endl;
 #endif
                         delete[] ft->lPos;
                         delete ft;
@@ -351,7 +353,7 @@ namespace pal {
                 delete feats;
             } else { // check labelsize
 #ifdef _VERBOSE_
-                std::cerr << "Feature " <<  ft_ptr->layer->name << "/" << ft_ptr->uid << " is skipped (label size = 0)" << std::endl;
+                Rcpp::Rcerr << "Feature " <<  ft_ptr->layer->name << "/" << ft_ptr->uid << " is skipped (label size = 0)" << std::endl;
 #endif
             }
         }
@@ -444,7 +446,7 @@ namespace pal {
         case GEOS_POINT:
 
 #ifdef _DEBUG_FULL
-            std::cout << "    POINT" << std::endl;
+            Rcpp::Rcout << "    POINT" << std::endl;
 #endif
 
             dist = dist_pointToLabel (feat->x[0], feat->y[0], lp);
@@ -461,7 +463,7 @@ namespace pal {
             //case geos::geom::GEOS_LINESTRING:
         case GEOS_LINESTRING:
 #ifdef _DEBUG_FULL
-            std::cout << "    LINE" << std::endl;
+            Rcpp::Rcout << "    LINE" << std::endl;
 #endif
             // Is one of label's boarder cross the line ?
             for (i = 0;i < 4;i++) {
@@ -488,7 +490,7 @@ namespace pal {
             //case geos::geom::GEOS_POLYGON:
         case GEOS_POLYGON:
 #ifdef _DEBUG_FULL
-            std::cout << "    POLY" << std::endl;
+            Rcpp::Rcout << "    POLY" << std::endl;
 #endif
             n =  nbLabelPointInPolygon (feat->nbPoints, feat->x, feat->y, lp->x, lp->y);
 
@@ -518,7 +520,7 @@ namespace pal {
         RTree<PointSet*, double, 2, double>::Iterator it;
         for (obstacles->GetFirst(it) ; it.IsNotNull(); obstacles->GetNext(it)){
             if (!(*it)->holeOf){
-                std::cout << "Release obs:" << ((Feature*)(*it))->layer->getName() << "/" << ((Feature*)(*it))->uid << std::endl;
+                Rcpp::Rcout << "Release obs:" << ((Feature*)(*it))->layer->getName() << "/" << ((Feature*)(*it))->uid << std::endl;
                 ((Feature*)(*it))->releaseCoordinates();
             }
         }
@@ -637,8 +639,8 @@ namespace pal {
 #endif
 
 #ifdef _VERBOSE_
-        std::cout <<  nbLayers << "/" << layers->size() << " layers to extract " << std::endl;
-        std::cout << "scale is 1:" << scale << std::endl << std::endl;
+        Rcpp::Rcout <<  nbLayers << "/" << layers->size() << " layers to extract " << std::endl;
+        Rcpp::Rcout << "scale is 1:" << scale << std::endl << std::endl;
 
 #endif
 
@@ -680,13 +682,13 @@ namespace pal {
 #endif
 
 #ifdef _VERBOSE_
-                        std::cout << "Layer's name: " << layer->getName() << std::endl;
-                        std::cout << "     scale range: " << layer->getMinScale() << "->" << layer->getMaxScale() << std::endl;
-                        std::cout << "     active:" << layer->isToLabel() << std::endl;
-                        std::cout << "     obstacle:" << layer->isObstacle() << std::endl;
-                        std::cout << "     toLabel:" << layer->isToLabel() << std::endl;
-                        std::cout << "     # features: " << layer->getNbFeatures() << std::endl;
-                        std::cout << "     # extracted features: " << context->fFeats->size() - oldNbft << std::endl;
+                        Rcpp::Rcout << "Layer's name: " << layer->getName() << std::endl;
+                        Rcpp::Rcout << "     scale range: " << layer->getMinScale() << "->" << layer->getMaxScale() << std::endl;
+                        Rcpp::Rcout << "     active:" << layer->isToLabel() << std::endl;
+                        Rcpp::Rcout << "     obstacle:" << layer->isObstacle() << std::endl;
+                        Rcpp::Rcout << "     toLabel:" << layer->isToLabel() << std::endl;
+                        Rcpp::Rcout << "     # features: " << layer->getNbFeatures() << std::endl;
+                        Rcpp::Rcout << "     # extracted features: " << context->fFeats->size() - oldNbft << std::endl;
 #endif
                         if (context->fFeats->size() - oldNbft > 0) {
                             char *name = new char[strlen (layer->getName()) +1];
@@ -716,7 +718,7 @@ namespace pal {
 
         if (fFeats->size() == 0) {
 #ifdef _VERBOSE_
-            std::cout << std::endl << "Empty problem" << std::endl;
+            Rcpp::Rcout << std::endl << "Empty problem" << std::endl;
 #endif
             delete fFeats;
             delete prob;
@@ -733,7 +735,7 @@ namespace pal {
 
         Feats *feat;
 
-        std::cout << "NbFt : " << prob->nbft << std::endl;
+        Rcpp::Rcout << "NbFt : " << prob->nbft << std::endl;
 
         // Filtering label positions against obstacles
         amin[0] = amin[1] = -DBL_MAX;
@@ -749,7 +751,7 @@ namespace pal {
         for (i = 0;i < prob->nbft;i++) { /* foreach feature into prob */
             feat = fFeats->pop_front();
 #ifdef _DEBUG_FULL_
-            std::cout << "Feature:" << feat->feature->layer->name << "/" << feat->feature->uid << std::endl;
+            Rcpp::Rcout << "Feature:" << feat->feature->layer->name << "/" << feat->feature->uid << std::endl;
 #endif
             prob->featStartId[i] = idlp;
             prob->inactiveCost[i] = pow (2, 10 - 10 * feat->priority);
@@ -791,7 +793,7 @@ namespace pal {
                 max_p = stop;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "Nblabel kept for feat " << feat->feature->uid << "/" << feat->feature->layer->name << ": " << max_p << "/" << feat->nblp << std::endl;
+            Rcpp::Rcout << "Nblabel kept for feat " << feat->feature->uid << "/" << feat->feature->layer->name << ": " << max_p << "/" << feat->nblp << std::endl;
 #endif
 
             // Sets costs for candidates of polygon
@@ -799,7 +801,7 @@ namespace pal {
                 LabelPosition::setCost (stop, feat->lPos, max_p, obstacles, bbx, bby);
 
 #ifdef _DEBUG_FULL_
-            std::cout << "All Cost are setted" << std::endl;
+            Rcpp::Rcout << "All Cost are setted" << std::endl;
 #endif
             // only keep the 'max_p' best candidates
             for (j = max_p;j < feat->nblp;j++) {
@@ -824,7 +826,7 @@ namespace pal {
         }
 
 #ifdef _DEBUG_FULL_
-        std::cout << "Malloc problem...." << std::endl;
+        Rcpp::Rcout << "Malloc problem...." << std::endl;
 #endif
 
 
@@ -834,7 +836,7 @@ namespace pal {
         //prob->feat = new int[prob->nblp];
 
 #ifdef _DEBUG_FULL_
-        std::cout << "problem malloc'd" << std::endl;
+        Rcpp::Rcout << "problem malloc'd" << std::endl;
 #endif
 
 
@@ -846,7 +848,7 @@ namespace pal {
                 lp->nbOverlap = 0;
 
                 if (lp->cost >= 1) {
-                    std::cout << " Warning: lp->cost == " << lp->cost << " (from feat: " << lp->feature->uid << "/" << lp->feature->layer->name << ")" << std::endl;
+                    Rcpp::Rcout << " Warning: lp->cost == " << lp->cost << " (from feat: " << lp->feature->uid << "/" << lp->feature->layer->name << ")" << std::endl;
                     lp->cost -= int (lp->cost); // label cost up to 1
                 }
 
@@ -873,7 +875,7 @@ namespace pal {
 
                 nbOverlaps += lp->nbOverlap;
 #ifdef _DEBUG_FULL_
-                std::cout << "Nb overlap for " << idlp << "/" << prob->nblp - 1 << " : " << lp->nbOverlap << std::endl;
+                Rcpp::Rcout << "Nb overlap for " << idlp << "/" << prob->nblp - 1 << " : " << lp->nbOverlap << std::endl;
 #endif
             }
             j++;
@@ -893,8 +895,8 @@ namespace pal {
 
 
 #ifdef _VERBOSE_
-        std::cout << "nbOverlap: " << prob->nbOverlap << std::endl;
-        std::cerr << scale << "\t"
+        Rcpp::Rcout << "nbOverlap: " << prob->nbOverlap << std::endl;
+        Rcpp::Rcerr << scale << "\t"
                   << prob->nbft << "\t"
                   << prob->nblp << "\t"
                   << prob->nbOverlap << "\t";
@@ -903,7 +905,7 @@ namespace pal {
         prob->reduce();
 
 #ifdef _VERBOSE_
-        std::cerr << prob->nblp << "\t"
+        Rcpp::Rcerr << prob->nblp << "\t"
                   << prob->nbOverlap;
 #endif
 
@@ -913,7 +915,7 @@ namespace pal {
     std::list<Label*>* Pal::labeller (double scale, double bbox[4], PalStat **stats, bool displayAll) {
 
 #ifdef _DEBUG_FULL_
-        std::cout << "LABELLER (active)" << std::endl;
+        Rcpp::Rcout << "LABELLER (active)" << std::endl;
 #endif
         int i;
 
@@ -945,7 +947,7 @@ namespace pal {
      */
     std::list<Label*>* Pal::labeller (int nbLayers, char **layersName , double *layersFactor, double scale, double bbox[4], PalStat **stats, bool displayAll) {
 #ifdef _DEBUG_
-        std::cout << "LABELLER (selection)" << std::endl;
+        Rcpp::Rcout << "LABELLER (selection)" << std::endl;
 #endif
 
         Problem *prob;
@@ -959,7 +961,7 @@ namespace pal {
 #ifdef _VERBOSE_
         clock_t start = clock();
         double create_time;
-        std::cout << std::endl << "bbox: " << bbox[0] << " " << bbox[1] << " " << bbox[2] << " " << bbox[3] << std::endl;
+        Rcpp::Rcout << std::endl << "bbox: " << bbox[0] << " " << bbox[1] << " " << bbox[2] << " " << bbox[3] << std::endl;
 #endif
 
 #ifdef _EXPORT_MAP_
@@ -991,9 +993,9 @@ namespace pal {
 
 #ifdef _VERBOSE_
             if (scale < 1)
-                std::cout << "Scale is 1:" << scale << std::endl;
+                Rcpp::Rcout << "Scale is 1:" << scale << std::endl;
             else
-                std::cout << "empty problem... finishing" << std::endl;
+                Rcpp::Rcout << "empty problem... finishing" << std::endl;
 #endif
 
 #ifdef _EXPORT_MAP_
@@ -1012,8 +1014,8 @@ namespace pal {
 #ifdef _VERBOSE_
         create_time = double (clock() - start) / double (CLOCKS_PER_SEC);
 
-        std::cout << std::endl << "Problem : " << prob->nblp << " candidates for " << prob->nbft << " features makes " << prob->nbOverlap << " overlaps" << std::endl;
-        std::cout << std::endl << "Times:"  << std::endl << "    to create problem:  " << create_time << std::endl;
+        Rcpp::Rcout << std::endl << "Problem : " << prob->nblp << " candidates for " << prob->nbft << " features makes " << prob->nbOverlap << " overlaps" << std::endl;
+        Rcpp::Rcout << std::endl << "Times:"  << std::endl << "    to create problem:  " << create_time << std::endl;
 #endif
 
         // search a solution
@@ -1039,8 +1041,8 @@ namespace pal {
 
 #ifdef _VERBOSE_
         clock_t total_time =  clock() - start;
-        std::cout << "    Total time: " << double (total_time) / double (CLOCKS_PER_SEC) << std::endl;
-        std::cerr << "\t" << create_time << "\t" << double (total_time) / double (CLOCKS_PER_SEC) << std::endl;
+        Rcpp::Rcout << "    Total time: " << double (total_time) / double (CLOCKS_PER_SEC) << std::endl;
+        Rcpp::Rcerr << "\t" << create_time << "\t" << double (total_time) / double (CLOCKS_PER_SEC) << std::endl;
 #endif
 
         delete prob;
@@ -1163,7 +1165,7 @@ namespace pal {
             candListSize = 0.2;
             break;
         default:
-            std::cerr << "Unknown search method..." << std::endl;
+            Rcpp::Rcerr << "Unknown search method..." << std::endl;
         }
     }
 

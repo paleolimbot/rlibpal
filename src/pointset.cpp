@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -136,9 +137,9 @@ namespace pal {
         int nbPt = 0;
         int i;
 #ifdef _DEBUG_FULL_
-        std::cout << "start: " << start << std::endl;
-        std::cout << "stop:  " << stop << std::endl;
-        std::cout << "nbPoints:  " << nbPoints << std::endl;
+        Rcpp::Rcout << "start: " << start << std::endl;
+        Rcpp::Rcout << "stop:  " << stop << std::endl;
+        Rcpp::Rcout << "nbPoints:  " << nbPoints << std::endl;
 #endif
 
         for (i = start; i != stop; i = (i + 1) % nbPoints, nbPt++) {
@@ -146,7 +147,7 @@ namespace pal {
                 *path_val = 0;
         }
 #ifdef _DEBUG_FULL_
-        std::cout << "new nbPoints:  " << nbPt << std::endl;
+        Rcpp::Rcout << "new nbPoints:  " << nbPt << std::endl;
 #endif
         return nbPt;
     }
@@ -166,8 +167,8 @@ namespace pal {
             k = 0;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "Keep # ot: " << newShape->nbPoints << " :: "  << path << std::endl;
-            std::cout << "path point:" << nbPtPath << std::endl;
+            Rcpp::Rcout << "Keep # ot: " << newShape->nbPoints << " :: "  << path << std::endl;
+            Rcpp::Rcout << "path point:" << nbPtPath << std::endl;
 #endif
             // start => b
             // stop => a
@@ -183,7 +184,7 @@ namespace pal {
                 newShape->y[k] = y[j];
                 newShape->status[k] = status[j];
 #ifdef _DEBUG_FULL_
-                std::cout << "    " << x[j] << ";" << y[j] << std::endl;
+                Rcpp::Rcout << "    " << x[j] << ";" << y[j] << std::endl;
 #endif
                 newShape->xmin = (newShape->xmin < x[j] ? newShape->xmin : x[j]);
                 newShape->xmax = (newShape->xmax > x[j] ? newShape->xmax : x[j]);
@@ -197,14 +198,14 @@ namespace pal {
                      newShape->y[k] = y[j];
                      newShape->status[k] = status[j];
             #ifdef _DEBUG_
-                     std::cout << "    " << x[j] << ";" << y[j] << std::endl;
+                     Rcpp::Rcout << "    " << x[j] << ";" << y[j] << std::endl;
             #endif
                      k++;
                   }
             */
 
 #ifdef _DEBUG_FULL_
-            std::cout << "pta:" << std::endl;
+            Rcpp::Rcout << "pta:" << std::endl;
 #endif
             newShape->x[k] = stop->x;
             newShape->y[k] = stop->y;
@@ -221,15 +222,15 @@ namespace pal {
             k++;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "    " << stop->x << ";" << stop->y << std::endl;
-            std::cout << "corner:" << std::endl;
+            Rcpp::Rcout << "    " << stop->x << ";" << stop->y << std::endl;
+            Rcpp::Rcout << "corner:" << std::endl;
 #endif
             for (j = 0, l = stop->nextCorner;j < nbBboxPt;j++, l = (l + stop->way + 4) % 4, k++) {
                 newShape->x[k] = bbx[l];
                 newShape->y[k] = bby[l];
                 newShape->status[k] = 15;
 #ifdef _DEBUG_FULL_
-                std::cout << "    " << bbx[l] << ";" << bby[l] << std::endl;
+                Rcpp::Rcout << "    " << bbx[l] << ";" << bby[l] << std::endl;
 #endif
                 newShape->xmin = (newShape->xmin < bbx[l] ? newShape->xmin : bbx[l]);
                 newShape->xmax = (newShape->xmax > bbx[l] ? newShape->xmax : bbx[l]);
@@ -251,9 +252,9 @@ namespace pal {
                 newShape->status[k] = ( (start->nextCorner + 3) % 4) + 10;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "ptb:" << std::endl;
-            std::cout << "    " << start->x << ";" << start->y << std::endl;
-            std::cout << "k: " << k << "    nbPoints: " << newShape->nbPoints << std::endl;
+            Rcpp::Rcout << "ptb:" << std::endl;
+            Rcpp::Rcout << "    " << start->x << ";" << start->y << std::endl;
+            Rcpp::Rcout << "k: " << k << "    nbPoints: " << newShape->nbPoints << std::endl;
 #endif
             return newShape;
         } else
@@ -265,7 +266,7 @@ namespace pal {
                                LinkedList<PointSet*> *shapes_final,
                                double bbx[4], double bby[4]) {
 #ifdef _DEBUG_
-        std::cout << "reduceLine" << std::endl;
+        Rcpp::Rcout << "reduceLine" << std::endl;
 #endif
 
         int i, j;
@@ -280,9 +281,9 @@ namespace pal {
         int *status = line->status;
 
 #ifdef _DEBUG_FULL_
-        std::cout << "Coord:" << std::endl;
+        Rcpp::Rcout << "Coord:" << std::endl;
         for (i = 0;i < nbPoints;i++) {
-            std::cout << x[i] << ";" << y[i] << std::endl;
+            Rcpp::Rcout << x[i] << ";" << y[i] << std::endl;
         }
 #endif
 
@@ -291,7 +292,7 @@ namespace pal {
                 bb = (ba + 1) % 4;
 
 #ifdef _DEBUG_FULL_
-                std::cout << "Test: " << i << "->" << j << " and " << ba << "-->" << bb  << std::endl;
+                Rcpp::Rcout << "Test: " << i << "->" << j << " and " << ba << "-->" << bb  << std::endl;
 #endif
                 if (computeSegIntersection (x[i], y[i], x[j], y[j],
                                             bbx[ba], bby[ba], bbx[bb], bby[bb],
@@ -302,9 +303,9 @@ namespace pal {
                     crossing->x = crossingX; // cross coordinate
                     crossing->y = crossingY;
 #ifdef _DEBUG_FULL_
-                    std::cout << "Crossing: " << std::endl;
-                    std::cout << "  cross point: " << crossingX << ";" << crossingY << std::endl;
-                    std::cout << "           pt: " << i  << "   (" << status[i] << ")" << std::endl;
+                    Rcpp::Rcout << "Crossing: " << std::endl;
+                    Rcpp::Rcout << "  cross point: " << crossingX << ";" << crossingY << std::endl;
+                    Rcpp::Rcout << "           pt: " << i  << "   (" << status[i] << ")" << std::endl;
 #endif
                     crossings->push_back (crossing);
                 }
@@ -406,7 +407,7 @@ namespace pal {
         } else {
             // line is out
 #ifdef _DEBUG_FULL_
-            std::cout << "Line is completely outside" << std::endl;
+            Rcpp::Rcout << "Line is completely outside" << std::endl;
 #endif
             delete line;
         }
@@ -424,7 +425,7 @@ namespace pal {
 //#define _DEBUG_FULL_
 
 #ifdef _DEBUG_
-        std::cout << "reducePolygon" << std::endl;
+        Rcpp::Rcout << "reducePolygon" << std::endl;
 #endif
 
         int i, j;
@@ -450,13 +451,13 @@ namespace pal {
             shape = shapes_toProcess->pop_front();
 
 #ifdef _DEBUG_FULL_
-            std::cout << "ShapeToReduce:" << std::endl;
+            Rcpp::Rcout << "ShapeToReduce:" << std::endl;
 #endif
 
             // search point where polygon and bbox cross
             for (i = 0;i < shape->nbPoints;i++) { // foreach polygon segment
 #ifdef _DEBUG_FULL_
-                std::cout << shape->x[i] << ";" << shape->y[i] << std::endl;
+                Rcpp::Rcout << shape->x[i] << ";" << shape->y[i] << std::endl;
 #endif
                 j = (i + 1) % shape->nbPoints;
                 for (ba = 0;ba < 4;ba++) { // for each bbox segement
@@ -540,13 +541,13 @@ namespace pal {
 
 #ifdef _DEBUG_FULL_
                 for (i = 0;i < crossingTabSize;i++) {
-                    std::cout << "Crossing # " << i << ":" << std::endl;
-                    std::cout << "   pt: " << crossingTab[i]->pt << std::endl;
-                    std::cout << "   d: " << crossingTab[i]->d << std::endl;
-                    std::cout << "   (x,y): (" << crossingTab[i]->x << "," << crossingTab[i]->y << ")" << std::endl;
-                    std::cout << "   next corner: " << crossingTab[i]->nextCorner << std::endl;
-                    std::cout << "   way: " << crossingTab[i]->way << std::endl;
-                    std::cout << std::endl;
+                    Rcpp::Rcout << "Crossing # " << i << ":" << std::endl;
+                    Rcpp::Rcout << "   pt: " << crossingTab[i]->pt << std::endl;
+                    Rcpp::Rcout << "   d: " << crossingTab[i]->d << std::endl;
+                    Rcpp::Rcout << "   (x,y): (" << crossingTab[i]->x << "," << crossingTab[i]->y << ")" << std::endl;
+                    Rcpp::Rcout << "   next corner: " << crossingTab[i]->nextCorner << std::endl;
+                    Rcpp::Rcout << "   way: " << crossingTab[i]->way << std::endl;
+                    Rcpp::Rcout << std::endl;
                 }
 #endif
 
@@ -557,9 +558,9 @@ namespace pal {
 
                 if (vabs (a->x - b->x) > 0.00001 || vabs (a->y - b->y) > 0.00001) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "crossing: " << a->x << ";" << a->y << std::endl;
-                    std::cout << "d: " << a->d << std::endl;
-                    std::cout << "a: 0           " << " b: " << (a->way + crossingTabSize) % crossingTabSize << std::endl;
+                    Rcpp::Rcout << "crossing: " << a->x << ";" << a->y << std::endl;
+                    Rcpp::Rcout << "d: " << a->d << std::endl;
+                    Rcpp::Rcout << "a: 0           " << " b: " << (a->way + crossingTabSize) % crossingTabSize << std::endl;
 #endif
 
 
@@ -584,7 +585,7 @@ namespace pal {
                     int nbPtPathB = 0;
 
 #ifdef _DEBUG_FULL_
-                    std::cout << std::endl;
+                    Rcpp::Rcout << std::endl;
 #endif
 
                     int path_a;
@@ -606,14 +607,14 @@ namespace pal {
                         path_a = -1;
                         path_b = 1;
                     } else {
-                        std::cout << "OULALA C EST UN PROBLEMEM CA!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+                        Rcpp::Rcout << "OULALA C EST UN PROBLEMEM CA!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
                         path_a = 0;
                         path_b = 0;
                     }
 
 #ifdef _DEBUG_FULL_
-                    std::cout << "Path_a: " << path_a << std::endl;
-                    std::cout << "Path_b: " << path_b << std::endl;
+                    Rcpp::Rcout << "Path_a: " << path_a << std::endl;
+                    Rcpp::Rcout << "Path_b: " << path_b << std::endl;
 #endif
 
                     nbPtPathA = shape->getPath ( (b->pt + 1) % shape->nbPoints,
@@ -629,8 +630,8 @@ namespace pal {
                     }
 
 #ifdef _DEBUG_FULL_
-                    std::cout << "Path_a: " << path_a << std::endl;
-                    std::cout << "Path_b: " << path_b << std::endl;
+                    Rcpp::Rcout << "Path_a: " << path_a << std::endl;
+                    Rcpp::Rcout << "Path_b: " << path_b << std::endl;
 #endif
 
                     PointSet *newShape = NULL;
@@ -678,12 +679,12 @@ namespace pal {
                 bool check = false, ok = false;
 
                 if (crossingTabSize == 1) {
-                    std::cout << "WARN : one crossing !!!!! " << std::endl;
+                    Rcpp::Rcout << "WARN : one crossing !!!!! " << std::endl;
                     bool in = true;
                     bool out = true;
                     for (i = 0;i < shape->nbPoints;i++) {
 #ifdef _DEBUG_FULL_
-                        std::cout << shape->x[i] << ";" << shape->y[i] << ";" << shape->status[i] << std::endl;
+                        Rcpp::Rcout << shape->x[i] << ";" << shape->y[i] << ";" << shape->status[i] << std::endl;
 #endif
                         if (shape->status[i] == -1) {
                             out = false;
@@ -761,14 +762,14 @@ namespace pal {
         newShape->y = new double[newShape->nbPoints];
         newShape->status = NULL;
 #ifdef _DEBUG_FULL_
-        std::cout << "New shape: ";
+        Rcpp::Rcout << "New shape: ";
 #endif
         // new shape # 1 from imin to imax
         for (j = 0, i = imin;i != (imax + 1) % nbPoints;i = (i + 1) % nbPoints, j++) {
             newShape->x[j] = x[i];
             newShape->y[j] = y[i];
 #ifdef _DEBUG_FULL_
-            std::cout << x[i] << ";" << y[i] << std::endl;
+            Rcpp::Rcout << x[i] << ";" << y[i] << std::endl;
 #endif
         }
         // is the cutting point a new one ?
@@ -777,14 +778,14 @@ namespace pal {
             newShape->x[j] = fptx;
             newShape->y[j] = fpty;
 #ifdef _DEBUG_FULL_
-            std::cout << fptx << ";" << fpty << std::endl;
+            Rcpp::Rcout << fptx << ";" << fpty << std::endl;
 #endif
         }
 
 #ifdef _DEBUG_FULL_
-        std::cout << "J = " << j << "/" << newShape->nbPoints << std::endl;
-        std::cout << std::endl;
-        std::cout << "This:    " << this << std::endl;
+        Rcpp::Rcout << "J = " << j << "/" << newShape->nbPoints << std::endl;
+        Rcpp::Rcout << std::endl;
+        Rcpp::Rcout << "This:    " << this << std::endl;
 #endif
 
         return newShape;
@@ -795,7 +796,7 @@ namespace pal {
                                   LinkedList<PointSet*> *shapes_final,
                                   double xrm, double yrm , char *uid) {
 #ifdef _DEBUG_
-        std::cout << "splitPolygons: " << uid << std::endl;
+        Rcpp::Rcout << "splitPolygons: " << uid << std::endl;
 #endif
         int i, j;
 
@@ -836,7 +837,7 @@ namespace pal {
 
         while (shapes_toProcess->size() > 0) {
 #ifdef _DEBUG_FULL_
-            std::cout << "Shape popping()" << std::endl;
+            Rcpp::Rcout << "Shape popping()" << std::endl;
 #endif
             shape = shapes_toProcess->pop_front();
 
@@ -846,19 +847,19 @@ namespace pal {
             pts = new int[nbp];
 
 #ifdef _DEBUG_FULL_
-            std::cout << "nbp: " << nbp << std::endl;
-            std::cout << " PtSet: ";
+            Rcpp::Rcout << "nbp: " << nbp << std::endl;
+            Rcpp::Rcout << " PtSet: ";
 #endif
 
             for (i = 0;i < nbp;i++) {
                 pts[i] = i;
 #ifdef _DEBUG_FULL_
-                std::cout << x[i] << ";" << y[i] << std::endl;
+                Rcpp::Rcout << x[i] << ";" << y[i] << std::endl;
 #endif
             }
 
 #ifdef _DEBUG_FULL_
-            std::cout << std::endl;
+            Rcpp::Rcout << std::endl;
 #endif
 
             // conpute convex hull
@@ -869,11 +870,11 @@ namespace pal {
 
 
 #ifdef _DEBUG_FULL_
-            std::cout << " CHull: ";
+            Rcpp::Rcout << " CHull: ";
             for (i = 0;i < cHullSize;i++) {
-                std::cout << cHull[i] << " ";
+                Rcpp::Rcout << cHull[i] << " ";
             }
-            std::cout << std::endl;
+            Rcpp::Rcout << std::endl;
 #endif
 
             bestArea = 0;
@@ -901,7 +902,7 @@ namespace pal {
                     }
 
 #ifdef _DEBUG_FULL_
-                    std::cout << "Deeper POint: " << pt << " between " << ips << " and " << cHull[ihn]  << std::endl;
+                    Rcpp::Rcout << "Deeper POint: " << pt << " between " << ips << " and " << cHull[ihn]  << std::endl;
 #endif
                     if (pt  != -1) {
                         // compute the ihs->ihn->pt triangle's area
@@ -941,9 +942,9 @@ namespace pal {
             int ps = -1, pe = -1, fps = -1, fpe = -1;
             if (retainedPt >= 0 && bestArea > labelArea) { // there is a hole so we'll cut the shape in two new shape (only if hole area is bigger than twice labelArea)
 #ifdef _DEBUG_FULL_
-                std::cout << "Trou: " << retainedPt << std::endl;
-                std::cout << "Hole: " << cHull[holeS] << " -> " << cHull[holeE] << std::endl;
-                std::cout << "iterate from " << (cHull[holeE] + 1) % nbp << "   to " << (cHull[holeS] - 1 + nbp) % nbp << std::endl;
+                Rcpp::Rcout << "Trou: " << retainedPt << std::endl;
+                Rcpp::Rcout << "Hole: " << cHull[holeS] << " -> " << cHull[holeE] << std::endl;
+                Rcpp::Rcout << "iterate from " << (cHull[holeE] + 1) % nbp << "   to " << (cHull[holeS] - 1 + nbp) % nbp << std::endl;
 #endif
                 c = DBL_MAX;
 
@@ -968,8 +969,8 @@ namespace pal {
                     fx = cx + dx;
                     fy = cy - dy;
 #ifdef _DEBUG_FULL_
-                    std::cout << "D: " << dx << " " << dy << std::endl;
-                    std::cout << "seg_length: " << seg_length << std::endl;
+                    Rcpp::Rcout << "D: " << dx << " " << dy << std::endl;
+                    Rcpp::Rcout << "seg_length: " << seg_length << std::endl;
 #endif
                     if (seg_length < EPSILON || vabs ( (b = cross_product (ex, ey, fx, fy, x[retainedPt], y[retainedPt]) / (seg_length))) > (seg_length / 2)) {  // retainedPt is not fronting i->j
                         if ( (ex = dist_euc2d_sq (x[i], y[i], x[retainedPt], y[retainedPt])) < (ey = dist_euc2d_sq (x[j], y[j], x[retainedPt], y[retainedPt]))) {
@@ -988,13 +989,13 @@ namespace pal {
                         pe = j;
 
                         if (!computeLineIntersection (x[i], y[i], x[j], y[j], x[retainedPt], y[retainedPt], x[retainedPt] - dx, y[retainedPt] + dy, &ptx, &pty)) {
-                            std::cout << "Oups ... il devrait par tomber la..." << std::endl;
+                            Rcpp::Rcout << "Oups ... il devrait par tomber la..." << std::endl;
                         }
 #ifdef _DEBUG_FULL_
-                        std::cout << "intersection : " << x[i] << " " <<  y[i] << " " << x[j] << " " <<  y[j] << " " <<  x[retainedPt] << " " <<  y[retainedPt] << " " <<  x[retainedPt] - dx << " " <<  y[retainedPt] + dy << std::endl;
-                        std::cout << "   =>   " << ptx << ";" << pty << std::endl;
-                        std::cout << "   cxy>   " << cx << ";" << cy << std::endl;
-                        std::cout << "   dxy>   " << dx << ";" << dy << std::endl;
+                        Rcpp::Rcout << "intersection : " << x[i] << " " <<  y[i] << " " << x[j] << " " <<  y[j] << " " <<  x[retainedPt] << " " <<  y[retainedPt] << " " <<  x[retainedPt] - dx << " " <<  y[retainedPt] + dy << std::endl;
+                        Rcpp::Rcout << "   =>   " << ptx << ";" << pty << std::endl;
+                        Rcpp::Rcout << "   cxy>   " << cx << ";" << cy << std::endl;
+                        Rcpp::Rcout << "   dxy>   " << dx << ";" << dy << std::endl;
 #endif
                     }
 
@@ -1010,17 +1011,17 @@ namespace pal {
 
                     for (k = cHull[holeS];k != cHull[holeE];k = (k + 1) % nbp) {
                         l = (k + 1) % nbp;
-                        //std::cout << "test " << k << " " << l << std::endl;
+                        //Rcpp::Rcout << "test " << k << " " << l << std::endl;
                         if (isSegIntersects (x[retainedPt], y[retainedPt], pointX, pointY, x[k], y[k], x[l], y[l])) {
                             isValid = false;
-                            //std::cout << "Invalid point" << pe << ps << std::endl;
+                            //Rcpp::Rcout << "Invalid point" << pe << ps << std::endl;
                             break;
                         }
                     }
 
 
                     if (isValid && b < c) {
-                        //std::cout << "new point: " << ps << " " << pe << std::endl;
+                        //Rcpp::Rcout << "new point: " << ps << " " << pe << std::endl;
                         c = b;
                         fps = ps;
                         fpe = pe;
@@ -1030,11 +1031,11 @@ namespace pal {
                 }  // for point which are not in hole
 
 #ifdef _DEBUG_FULL_
-                std::cout << " cut from " << retainedPt << " to ";
+                Rcpp::Rcout << " cut from " << retainedPt << " to ";
                 if (fps == fpe)
-                    std::cout << "point " << fps << std::endl;
+                    Rcpp::Rcout << "point " << fps << std::endl;
                 else {
-                    std::cout << "new point (" << fptx << ";" << fpty << "     between " << fps << " and " << fpe << std::endl;
+                    Rcpp::Rcout << "new point (" << fptx << ";" << fpty << "     between " << fps << " and " << fpe << std::endl;
                 }
 #endif
 
@@ -1055,11 +1056,11 @@ namespace pal {
 
 
 #ifdef _DEBUG_FULL_
-                std::cout << "imin: " << imin << "    imax:" << imax << std::endl;
+                Rcpp::Rcout << "imin: " << imin << "    imax:" << imax << std::endl;
 #endif
                 if (retainedPt == -1 || fps == -1 || fpe == -1) {
 #ifdef _DEBUG_
-                    std::cout << std::endl << "Failed to split feature !!! (uid=" << uid << ")" << std::endl;
+                    Rcpp::Rcout << std::endl << "Failed to split feature !!! (uid=" << uid << ")" << std::endl;
 #endif
                     if (shape->parent)
                         delete shape;
@@ -1078,9 +1079,9 @@ namespace pal {
 
 #ifdef _DEBUG_FULL_
                     int i = 0;
-                    std::cout << "push back:" <<  std::endl;
+                    Rcpp::Rcout << "push back:" <<  std::endl;
                     for (i = 0;i < newShape->nbPoints;i++) {
-                        std::cout << newShape->x[i] << ";" << newShape->y[i] << std::endl;
+                        Rcpp::Rcout << newShape->x[i] << ";" << newShape->y[i] << std::endl;
                     }
 #endif
 
@@ -1099,9 +1100,9 @@ namespace pal {
                         newShape->parent = shape;
 
 #ifdef _DEBUG_FULL_
-                    std::cout << "push back:" <<  std::endl;
+                    Rcpp::Rcout << "push back:" <<  std::endl;
                     for (i = 0;i < newShape->nbPoints;i++) {
-                        std::cout << newShape->x[i] << ";" << newShape->y[i] << std::endl;
+                        Rcpp::Rcout << newShape->x[i] << ";" << newShape->y[i] << std::endl;
                     }
 #endif
                     shapes_toProcess->push_back (newShape);
@@ -1111,7 +1112,7 @@ namespace pal {
                 }
             } else {
 #ifdef _DEBUG_FULL_
-                std::cout << "Put shape into shapes_final" << std::endl;
+                Rcpp::Rcout << "Put shape into shapes_final" << std::endl;
 #endif
                 shapes_final->push_back (shape);
             }
@@ -1123,7 +1124,7 @@ namespace pal {
     PointSet * PointSet::createProblemSpecificPointSet (double bbx[4], double bby[4], bool *outside, bool *inside) {
         int i;
 #ifdef _DEBUG_FULL_
-        std::cout << "CreateProblemSpecific:" << std::endl;
+        Rcpp::Rcout << "CreateProblemSpecific:" << std::endl;
 #endif
         PointSet *shape = new PointSet();
         shape->status = new int[nbPoints];
@@ -1188,7 +1189,7 @@ namespace pal {
                 *inside = false;
             }
 #ifdef _DEBUG_FULL_
-            std::cout << shape->x[i] << ";" << shape->y[i] << ";" << shape->status[i] << ";" << cp0 << ";" << cp1 << ";" << cp2 << ";" << cp3 << std::endl;
+            Rcpp::Rcout << shape->x[i] << ";" << shape->y[i] << ";" << shape->status[i] << ";" << cp0 << ";" << cp1 << ";" << cp2 << ";" << cp3 << std::endl;
 #endif
         }
 
@@ -1239,12 +1240,12 @@ namespace pal {
         bbox[3] = - DBL_MAX;
 
 #ifdef _DEBUG_
-        std::cout << "Compute_chull_bbox" << std::endl;
+        Rcpp::Rcout << "Compute_chull_bbox" << std::endl;
 #endif
 
         for (i = 0;i < cHullSize;i++) {
 #ifdef _DEBUG_FULL_
-            std::cout << x[cHull[i]] << ";" << y[cHull[i]] << std::endl;
+            Rcpp::Rcout << x[cHull[i]] << ";" << y[cHull[i]] << std::endl;
 #endif
             if (x[cHull[i]] < bbox[0])
                 bbox[0] = x[cHull[i]];
@@ -1349,14 +1350,14 @@ namespace pal {
         finalBb->length = best_length;
 
 #ifdef _DEBUG_FULL_
-        std::cout << "FINAL" << std::endl;
-        std::cout << "Length : " << best_length << std::endl;
-        std::cout << "Width : " << best_width << std::endl;
-        std::cout << "Alpha: " << best_alpha << "    " << best_alpha*180 / M_PI << std::endl;
+        Rcpp::Rcout << "FINAL" << std::endl;
+        Rcpp::Rcout << "Length : " << best_length << std::endl;
+        Rcpp::Rcout << "Width : " << best_width << std::endl;
+        Rcpp::Rcout << "Alpha: " << best_alpha << "    " << best_alpha*180 / M_PI << std::endl;
         for (i = 0;i < 4;i++) {
-            std::cout << finalBb->x[0] << " " << finalBb->y[0] << " ";
+            Rcpp::Rcout << finalBb->x[0] << " " << finalBb->y[0] << " ";
         }
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
 #endif
 
         return finalBb;
@@ -1372,7 +1373,7 @@ namespace pal {
 
         if (!isPointInPolygon(nbPoints, x, y, px,py)){
             double d = getDist(px,py);
-            //std::cout << "Outside : " << d << std::endl;
+            //Rcpp::Rcout << "Outside : " << d << std::endl;
             if (d < 0){
                 d = -(d*d*d*d);
             }
@@ -1438,7 +1439,7 @@ namespace pal {
                     if (dist[k] > d){
                         dist[k] = d;
                         ok[k] = true;
-                        //std::cout << "new dist for " << k << ": " << dist[k] << std::endl;
+                        //Rcpp::Rcout << "new dist for " << k << ": " << dist[k] << std::endl;
                     }
                 }
              }
@@ -1449,10 +1450,10 @@ namespace pal {
         
         for (i=0;i<8;i++){
             if (!ok[i]){
-                std::cout << "ERROR!!!!!!!!!!!!!!!!!" << std::endl;
+                Rcpp::Rcout << "ERROR!!!!!!!!!!!!!!!!!" << std::endl;
                 dist[i] = 0;
             }
-            //std::cout << "dist[" << i << "]: " << dist[i] << std::endl;
+            //Rcpp::Rcout << "dist[" << i << "]: " << dist[i] << std::endl;
         }
 
         a = min (dist[0], dist[4]);
@@ -1460,10 +1461,10 @@ namespace pal {
         c = min (dist[2], dist[6]);
         d = min (dist[3], dist[7]);
     /*
-        std::cout << "a: " << a << std::endl;
-        std::cout << "b: " << b << std::endl;
-        std::cout << "c: " << c << std::endl;
-        std::cout << "d: " << d << std::endl;
+        Rcpp::Rcout << "a: " << a << std::endl;
+        Rcpp::Rcout << "b: " << b << std::endl;
+        Rcpp::Rcout << "c: " << c << std::endl;
+        Rcpp::Rcout << "d: " << d << std::endl;
       */ 
         //a = (a+b+c+d)/4.0;
 

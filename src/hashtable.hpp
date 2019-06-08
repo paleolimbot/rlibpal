@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -189,10 +190,10 @@ namespace pal {
             }
         }
 
-        std::cout << "# elem: " << c << std::endl;
-        std::cout << "# linked list : " << n << " / " << tableSize << std::endl;
-        std::cout << "nb elem / real list" << c / n << std::endl;
-        std::cout << "nb elem / tableSize" << c / tableSize << std::endl;
+        Rcpp::Rcout << "# elem: " << c << std::endl;
+        Rcpp::Rcout << "# linked list : " << n << " / " << tableSize << std::endl;
+        Rcpp::Rcout << "nb elem / real list" << c / n << std::endl;
+        Rcpp::Rcout << "nb elem / tableSize" << c / tableSize << std::endl;
     }
 
 

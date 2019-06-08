@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /*
  *   libpal - Automated Placement of Labels Library     http://pal.heig-vd.ch
  *
@@ -150,7 +151,7 @@ namespace pal {
         LabelPosition *lp2 = (LabelPosition *) ctx;
 
         if (lp2->isInConflict (lp)) {
-            //std::cout << "   hit !" << std::endl;
+            //Rcpp::Rcout << "   hit !" << std::endl;
             lp->nbOverlap--;
             lp2->nbOverlap--;
         }
@@ -234,7 +235,7 @@ namespace pal {
 
         this->nblp -= counter;
 #ifdef _VERBOSE_
-        std::cout << "problem reduce to " << nblp << " candidates which makes " << nbOverlap << " overlaps"  << std::endl;
+        Rcpp::Rcout << "problem reduce to " << nblp << " candidates which makes " << nbOverlap << " overlaps"  << std::endl;
 #endif
         delete[] ok;
     }
@@ -333,7 +334,7 @@ namespace pal {
      */
     void Problem::init_sol_falp() {
 #ifdef _DEBUG_
-        std::cout << "Init solution FALP" << std::endl;
+        Rcpp::Rcout << "Init solution FALP" << std::endl;
 #endif
 
         int i, j;
@@ -367,14 +368,14 @@ namespace pal {
             lp = labelpositions[label];
 
             if (lp->id != label) {
-                std::cout << "Error: " << lp->id << " <--> " << label << std::endl;
+                Rcpp::Rcout << "Error: " << lp->id << " <--> " << label << std::endl;
             }
 
 
             sol->s[lp->probFeat] = label;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "sol->s[" << lp->probFeat << "] :" << label << std::endl;
+            Rcpp::Rcout << "sol->s[" << lp->probFeat << "] :" << label << std::endl;
 #endif
 
             for (i = featStartId[lp->probFeat];i < featStartId[lp->probFeat] + featNbLp[lp->probFeat];i++) {
@@ -508,21 +509,21 @@ namespace pal {
 
 #ifdef _VERBOSE_
         create_part_time = clock();
-        std::cout << "   SubPart (averagesize: " << subPartTotalSize / nbft <<  ") creation: " << (double) (create_part_time - start_time) / (double) CLOCKS_PER_SEC << std::endl;
+        Rcpp::Rcout << "   SubPart (averagesize: " << subPartTotalSize / nbft <<  ") creation: " << (double) (create_part_time - start_time) / (double) CLOCKS_PER_SEC << std::endl;
 #endif
 
         init_sol_falp();
 
 #ifdef _VERBOSE_
         init_sol_time = clock();
-        std::cout << "   Compute initial solution: " << (double) (init_sol_time - create_part_time) / (double) CLOCKS_PER_SEC;
+        Rcpp::Rcout << "   Compute initial solution: " << (double) (init_sol_time - create_part_time) / (double) CLOCKS_PER_SEC;
 #endif
 
         solution_cost();
 
 #ifdef _VERBOSE_
-        std::cerr << "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
-        std::cout << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive  << "(" << (double) nbActive / (double) nbft << "%)" << std::endl;
+        Rcpp::Rcerr << "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
+        Rcpp::Rcout << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive  << "(" << (double) nbActive / (double) nbft << "%)" << std::endl;
 #endif
 
 
@@ -570,7 +571,7 @@ namespace pal {
                 break;
             default:
 #ifdef _VERBOSE_
-                std::cerr << "Unknown search method..." << std::endl;
+                Rcpp::Rcerr << "Unknown search method..." << std::endl;
 #endif
                 return;
             }
@@ -580,10 +581,10 @@ namespace pal {
             if (delta > EPSILON) {
                 /* Update solution */
 #ifdef _DEBUG_FULL_
-                std::cout << "Update solution from subpart, current cost:" << std::endl;
+                Rcpp::Rcout << "Update solution from subpart, current cost:" << std::endl;
                 solution_cost ();
-                std::cout << "Delta > EPSILON: update solution" << std::endl;
-                std::cout << "after modif cost:" << std::endl;
+                Rcpp::Rcout << "Delta > EPSILON: update solution" << std::endl;
+                Rcpp::Rcout << "after modif cost:" << std::endl;
                 solution_cost ();
 #endif
                 for (i = 0;i < current->borderSize;i++) {
@@ -606,7 +607,7 @@ namespace pal {
                 }
             } else {// not improved
 #ifdef _DEBUG_FULL_
-                std::cout << "subpart not improved" << std::endl;
+                Rcpp::Rcout << "subpart not improved" << std::endl;
 #endif
                 ok[seed] = true;
             }
@@ -615,17 +616,17 @@ namespace pal {
         solution_cost();
 #ifdef _VERBOSE_
         search_time = clock();
-        std::cout << "   Improved solution: " << (double) (search_time - start_time) / (double) CLOCKS_PER_SEC << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive << " (" << (double) nbActive / (double) nbft << ")" << std::endl;
+        Rcpp::Rcout << "   Improved solution: " << (double) (search_time - start_time) / (double) CLOCKS_PER_SEC << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive << " (" << (double) nbActive / (double) nbft << ")" << std::endl;
 
-        std::cerr << "\t" << subPartTotalSize;
+        Rcpp::Rcerr << "\t" << subPartTotalSize;
         if (searchMethod == POPMUSIC_TABU)
-            std::cerr << "\tpop_tabu\t";
+            Rcpp::Rcerr << "\tpop_tabu\t";
         else if (searchMethod == POPMUSIC_TABU_CHAIN)
-            std::cerr << "\tpop_tabu_chain\t";
+            Rcpp::Rcerr << "\tpop_tabu_chain\t";
         else if (searchMethod == POPMUSIC_CHAIN)
-            std::cerr << "\tpop_chain\t";
+            Rcpp::Rcerr << "\tpop_chain\t";
 
-        std::cerr << r << "\t" << popit << "\t" << (create_part_time - start_time) / (double) CLOCKS_PER_SEC <<   "\t" << (init_sol_time - create_part_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - init_sol_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - start_time) / (double) CLOCKS_PER_SEC <<   "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
+        Rcpp::Rcerr << r << "\t" << popit << "\t" << (create_part_time - start_time) / (double) CLOCKS_PER_SEC <<   "\t" << (init_sol_time - create_part_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - init_sol_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - start_time) / (double) CLOCKS_PER_SEC <<   "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
 
 #endif
 
@@ -913,7 +914,7 @@ namespace pal {
 
     double Problem::popmusic_tabu (SubPart *part) {
 #ifdef _DEBUG_FULL_
-        std::cout << "Subpart: Tabu Search" << std::endl;
+        Rcpp::Rcout << "Subpart: Tabu Search" << std::endl;
 #endif
 
         int probSize = part->probSize;
@@ -996,10 +997,10 @@ namespace pal {
             j = featStartId[sub[i]];
             for (lp = 0;lp < featNbLp[sub[i]];lp++) {
                 it = j + lp;
-                //std::cerr << "it = " << j << " + " << lp << std::endl;
-                // std::cerr << "it/nblp:" << it << "/" << all_nblp << std::endl;
+                //Rcpp::Rcerr << "it = " << j << " + " << lp << std::endl;
+                // Rcpp::Rcerr << "it/nblp:" << it << "/" << all_nblp << std::endl;
                 labelPositionCost[it] = compute_feature_cost (part, i, it, & (nbOlap[it]));
-                //std::cerr << "nbOlap[" << it << "] : " << nbOlap[it] << std::endl;
+                //Rcpp::Rcerr << "nbOlap[" << it << "] : " << nbOlap[it] << std::endl;
             }
         }
 
@@ -1046,7 +1047,7 @@ namespace pal {
         it = 0;
         while (it < stop_it && best_cost >= EPSILON) {
 #ifdef _DEBUG_FULL_
-            std::cout << "  ITERATION : " << it << " stop: " << stop_it << std::endl;
+            Rcpp::Rcout << "  ITERATION : " << it << " stop: " << stop_it << std::endl;
 #endif
             actualizeTabuCandidateList (m, it, nbOverlap, &candidateListSize, candidateBaseFactor, &candidateFactor, minCandidateListSize, reductionFactor, minTabuTSize, tabuFactor, &tenure, probSize);
             delta_min     = DBL_MAX;
@@ -1085,30 +1086,30 @@ namespace pal {
                         }
 
 #ifdef _DEBUG_FULL_
-                        std::cout <<  "      test moving " << oldPos << " to " << featStartId[feat_sub_id] + j << std::endl;
-                        std::cout << "       new pos makes " << nbOlap[featStartId[feat_sub_id] + j] << " overlaps" << std::endl;
-                        std::cout << "       delta is : " << delta << std::endl;
+                        Rcpp::Rcout <<  "      test moving " << oldPos << " to " << featStartId[feat_sub_id] + j << std::endl;
+                        Rcpp::Rcout << "       new pos makes " << nbOlap[featStartId[feat_sub_id] + j] << " overlaps" << std::endl;
+                        Rcpp::Rcout << "       delta is : " << delta << std::endl;
 #endif
                         // move is authorized wether the feat isn't taboo or whether the move give a new best solution
                         authorized = (tabu_list[feat_id - borderSize] <= it) || (cur_cost + delta < best_cost);
 
 #ifdef _DEBUG_FULL_
                         if (tabu_list[feat_id - borderSize] > it) {
-                            std::cout << "      Move is tabu" << std::endl;
+                            Rcpp::Rcout << "      Move is tabu" << std::endl;
                         } else {
-                            std::cout << "      Move is ok" << std::endl;
+                            Rcpp::Rcout << "      Move is ok" << std::endl;
                         }
 #endif
                         if (delta < delta_min && authorized) {
 #ifdef _DEBUG_FULL_
-                            std::cout << "      keep move" << std::endl;
-                            std::cout << "  choosed_feat: " << feat_id << std::endl;
+                            Rcpp::Rcout << "      keep move" << std::endl;
+                            Rcpp::Rcout << "  choosed_feat: " << feat_id << std::endl;
                             if (j == -1)
-                                std::cout << " choosed_label: " << j << std::endl;
+                                Rcpp::Rcout << " choosed_label: " << j << std::endl;
                             else
-                                std::cout << " choosed_label: " << featStartId[feat_sub_id] + j << std::endl;
+                                Rcpp::Rcout << " choosed_label: " << featStartId[feat_sub_id] + j << std::endl;
 
-                            std::cout << "         delta: " << delta << std::endl;
+                            Rcpp::Rcout << "         delta: " << delta << std::endl;
 #endif
 
                             choosed_feat = feat_id;
@@ -1123,9 +1124,9 @@ namespace pal {
                         }
 #ifdef _DEBUG_FULL_
                         else if (!authorized) {
-                            std::cout << "      tabu" << std::endl;
+                            Rcpp::Rcout << "      tabu" << std::endl;
                         } else {
-                            std::cout << "      no good enough" << std::endl;
+                            Rcpp::Rcout << "      no good enough" << std::endl;
                         }
 #endif
                     }
@@ -1135,10 +1136,10 @@ namespace pal {
             // if a modification has been retained
             if (choosed_feat >= 0) {
 #ifdef _DEBUG_FULL_
-                std::cout << " Apply move:" << std::endl;
-                std::cout << "       feat: " << choosed_feat << std::endl;
-                std::cout << "      label: " << choosed_label << std::endl;
-                std::cout << "      delta: " << delta_min << std::endl << std::endl;
+                Rcpp::Rcout << " Apply move:" << std::endl;
+                Rcpp::Rcout << "       feat: " << choosed_feat << std::endl;
+                Rcpp::Rcout << "      label: " << choosed_label << std::endl;
+                Rcpp::Rcout << "      delta: " << delta_min << std::endl << std::endl;
 #endif
                 // update the solution and update tabu list
                 int old_label = sol[choosed_feat];
@@ -1244,10 +1245,10 @@ namespace pal {
                                         &candidateFactor, minCandidateListSize, growingFactor, probSize);
             }
 #ifdef _DEBUG_FULL_
-            std::cout << "cost : " << cur_cost << std::endl;
+            Rcpp::Rcout << "cost : " << cur_cost << std::endl;
             int nbover;
-            std::cout << "computed cost: " << compute_subsolution_cost (part, sol, &nbover) << std::endl;
-            std::cout << "best_cost: " << best_cost << std::endl << std::endl;
+            Rcpp::Rcout << "computed cost: " << compute_subsolution_cost (part, sol, &nbover) << std::endl;
+            Rcpp::Rcout << "best_cost: " << best_cost << std::endl << std::endl;
 #endif
             it++;
         }
@@ -1292,25 +1293,25 @@ namespace pal {
 
 
 #ifdef _DEBUG_FULL_
-        std::cout << "chainCallback" << std::endl;
-        std::cout << "      lp from rtree: " << lp << std::endl;
-        std::cout << "    lpid from rtree: " << lp->id << std::endl;
-        std::cout << "    lpco from rtree: " << lp->cost << std::endl;
-        std::cout << "    lp from context: " << ctx->lp << std::endl;
-        std::cout << "  lpid from context: " << ctx->lp->id << std::endl;
-        std::cout << "  lpco from context: " << ctx->lp->cost << std::endl;
-        std::cout << "          delta_tmp: " << ctx->delta_tmp << std::endl;
-        std::cout << "         *delta_tmp: " << *ctx->delta_tmp << std::endl;
-        std::cout << "       inactiveCost: " << ctx->inactiveCost << std::endl;
+        Rcpp::Rcout << "chainCallback" << std::endl;
+        Rcpp::Rcout << "      lp from rtree: " << lp << std::endl;
+        Rcpp::Rcout << "    lpid from rtree: " << lp->id << std::endl;
+        Rcpp::Rcout << "    lpco from rtree: " << lp->cost << std::endl;
+        Rcpp::Rcout << "    lp from context: " << ctx->lp << std::endl;
+        Rcpp::Rcout << "  lpid from context: " << ctx->lp->id << std::endl;
+        Rcpp::Rcout << "  lpco from context: " << ctx->lp->cost << std::endl;
+        Rcpp::Rcout << "          delta_tmp: " << ctx->delta_tmp << std::endl;
+        Rcpp::Rcout << "         *delta_tmp: " << *ctx->delta_tmp << std::endl;
+        Rcpp::Rcout << "       inactiveCost: " << ctx->inactiveCost << std::endl;
 #endif
 
 #ifdef _DEBUG_FULL_
-        std::cout << "ejChCallBack: " << lp->id << "<->" << ctx->lp->id << std::endl;
+        Rcpp::Rcout << "ejChCallBack: " << lp->id << "<->" << ctx->lp->id << std::endl;
 #endif
         if (lp->isInConflict (ctx->lp)) {
 #ifdef _DEBUG_FULL_
-            std::cout << "ejChCallBack: " << lp->id << "<->" << ctx->lp->id << std::endl;
-            std::cout << "    Conflictual..." << std::endl;
+            Rcpp::Rcout << "ejChCallBack: " << lp->id << "<->" << ctx->lp->id << std::endl;
+            Rcpp::Rcout << "    Conflictual..." << std::endl;
 #endif
             int feat, rfeat;
             bool sub = ctx->featWrap;
@@ -1323,14 +1324,14 @@ namespace pal {
                 rfeat = feat;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "    feat: " << feat << std::endl;
-            std::cout << "    sol: " << ctx->tmpsol[feat] << "/" << lp->id << std::endl;
-            std::cout << "    border:" << ctx->borderSize << std::endl;
+            Rcpp::Rcout << "    feat: " << feat << std::endl;
+            Rcpp::Rcout << "    sol: " << ctx->tmpsol[feat] << "/" << lp->id << std::endl;
+            Rcpp::Rcout << "    border:" << ctx->borderSize << std::endl;
 #endif
             if (feat >= 0 && ctx->tmpsol[feat] == lp->id) {
                 if (sub && feat < ctx->borderSize) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "    Cannot touch border (throw) !" << std::endl;
+                    Rcpp::Rcout << "    Cannot touch border (throw) !" << std::endl;
 #endif
                     throw - 2;
                 }
@@ -1342,7 +1343,7 @@ namespace pal {
             while (cur) {
                 if (cur->item->feat == feat) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "Cycle into chain (throw) !" << std::endl;
+                    Rcpp::Rcout << "Cycle into chain (throw) !" << std::endl;
 #endif
                     throw - 1;
                 }
@@ -1411,7 +1412,7 @@ namespace pal {
             seedNbLp = featNbLp[subseed];
             delta_min = DBL_MAX;
 #ifdef _DEBUG_FULL_
-            std::cout << "New seed: " << seed << "/" << subseed << std::endl;
+            Rcpp::Rcout << "New seed: " << seed << "/" << subseed << std::endl;
 #endif
             next_seed = -1;
             retainedLabel = -2;
@@ -1451,13 +1452,13 @@ namespace pal {
                             context.lp = lp;
 
                             if (conflicts->size() != 0)
-                                std::cerr << "Conflicts not empty !!" << std::endl;
+                                Rcpp::Rcerr << "Conflicts not empty !!" << std::endl;
 
                             // search ative conflicts and count them
                             candidates_subsol->Search (amin, amax, chainCallback, (void*) &context);
 
 #ifdef _DEBUG_FULL_
-                            std::cout << "Conflicts:" <<  conflicts->size() << std::endl;
+                            Rcpp::Rcout << "Conflicts:" <<  conflicts->size() << std::endl;
 #endif
                             // no conflict -> end of chain
                             if (conflicts->size() == 0) {
@@ -1573,7 +1574,7 @@ namespace pal {
                     }
                 } catch (int i) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "catch int " << i << std::endl;
+                    Rcpp::Rcout << "catch int " << i << std::endl;
 #endif
                     while (conflicts->size() > 0)
                         conflicts->pop_front();
@@ -1584,7 +1585,7 @@ namespace pal {
                 seed = -1;
             } else if (currentChain->size() > max_degree) {
 #ifdef _VERBOSE_
-                std::cout << "Max degree reached !! (" << max_degree << ")" << std::endl;
+                Rcpp::Rcout << "Max degree reached !! (" << max_degree << ")" << std::endl;
 #endif
                 seed = -1;
             } else {
@@ -1713,7 +1714,7 @@ namespace pal {
                             }
                             context.lp = lp;
                             if (conflicts->size() != 0)
-                                std::cerr << "Conflicts not empty" << std::endl;
+                                Rcpp::Rcerr << "Conflicts not empty" << std::endl;
 
                             candidates_sol->Search (amin, amax, chainCallback, (void*) &context);
 
@@ -1833,7 +1834,7 @@ namespace pal {
                     }
                 } catch (int i) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "catch Cycle in chain" << std::endl;
+                    Rcpp::Rcout << "catch Cycle in chain" << std::endl;
 #endif
                     while (conflicts->size() > 0)
                         conflicts->pop_front();
@@ -1843,7 +1844,7 @@ namespace pal {
             if (next_seed == -1) {
                 seed = -1;
             } else if (currentChain->size() > max_degree) {
-                std::cout << "Max degree reached !! (" << max_degree << ")" << std::endl;
+                Rcpp::Rcout << "Max degree reached !! (" << max_degree << ")" << std::endl;
                 seed = -1;
             } else {
                 ElemTrans *et = new ElemTrans();
@@ -1987,9 +1988,9 @@ namespace pal {
 
                     cur_cost += current_chain->delta;
 #ifdef _DEBUG_FULL_
-                    std::cout << "cur->cost: " << cur_cost << std::endl;
+                    Rcpp::Rcout << "cur->cost: " << cur_cost << std::endl;
                     int kov;
-                    std::cout << "computed cost: " << compute_subsolution_cost (part, sol, &kov) << std::endl << std::endl;
+                    Rcpp::Rcout << "computed cost: " << compute_subsolution_cost (part, sol, &kov) << std::endl << std::endl;
 #endif
                     /* check if new solution is a new best solution */
                     if (best_cost - cur_cost > EPSILON) {
@@ -2139,9 +2140,9 @@ namespace pal {
 
 #ifdef _DEBUG_FULL_
         int nbOv;
-        std::cout << std::endl << "Initial solution cost " << cur_cost << std::endl;
-        std::cout << "Computed: " << compute_subsolution_cost (part, sol, &nbOv);
-        std::cout << "NbOverlap: " << nbOv << std::endl;
+        Rcpp::Rcout << std::endl << "Initial solution cost " << cur_cost << std::endl;
+        Rcpp::Rcout << "Computed: " << compute_subsolution_cost (part, sol, &nbOv);
+        Rcpp::Rcout << "NbOverlap: " << nbOv << std::endl;
 #endif
         while (it < stop_it) {
             retainedChain = NULL;
@@ -2149,19 +2150,19 @@ namespace pal {
             validCandidateId = -1;
 
 #ifdef _DEBUG_FULL_
-            std::cout << std::endl << std::endl << candidateListSize << std::endl;
+            Rcpp::Rcout << std::endl << std::endl << candidateListSize << std::endl;
 #endif
             for (itC = 0;itC < candidateListSize;itC++) {
                 seed = candidates[itC]->feat_id;
                 seedSh = seed - borderSize;
 
 #ifdef _DEBUG_FULL_
-                std::cout << "new candidates:" << std::endl;
+                Rcpp::Rcout << "new candidates:" << std::endl;
 #endif
                 current_chain = chain (part, seed);
 
 #ifdef _DEBUG_FULL_
-                std::cout << "get chain:" << current_chain << std::endl;
+                Rcpp::Rcout << "get chain:" << current_chain << std::endl;
 #endif
                 if (current_chain) {
                     // seed is not taboo or chain give us a new best solution
@@ -2170,31 +2171,31 @@ namespace pal {
                             retainedChain = current_chain;
                             bestChain = current_chain->delta;
 #ifdef _DEBUG_FULL_
-                            std::cout << "New chain, delta = " << current_chain->delta << std::endl;
+                            Rcpp::Rcout << "New chain, delta = " << current_chain->delta << std::endl;
 #endif
                         } else if (current_chain->delta - retainedChain->delta < EPSILON) {
                             delete_chain (retainedChain);
                             retainedChain = current_chain;
                             bestChain = current_chain->delta;
 #ifdef _DEBUG_FULL_
-                            std::cout << "New best chain, delta = " << current_chain->delta << std::endl;
+                            Rcpp::Rcout << "New best chain, delta = " << current_chain->delta << std::endl;
 #endif
                         } else {
 #ifdef _DEBUG_FULL_
-                            std::cout << "chain rejected..." << std::endl;
+                            Rcpp::Rcout << "chain rejected..." << std::endl;
 #endif
                             delete_chain (current_chain);
                         }
                     } else {
 #ifdef _DEBUG_FULL_
-                        std::cout << "chain rejected, tabu and/or delta = " << current_chain->delta << std::endl;
+                        Rcpp::Rcout << "chain rejected, tabu and/or delta = " << current_chain->delta << std::endl;
 #endif
                         delete_chain (current_chain);
                     }
                 }
 #ifdef _DEBUG_FULL_
                 else {
-                    std::cout << "no chain !!" << std::endl;
+                    Rcpp::Rcout << "no chain !!" << std::endl;
                 }
 #endif
 
@@ -2202,15 +2203,15 @@ namespace pal {
 
             if (retainedChain /*&& retainedChain->delta <= 0*/) {
 #ifdef _DEBUG_FULL_
-                std::cout << it << " retained chain's degree: " << retainedChain->degree;
-                std::cout << "   and delta: " << retainedChain->delta << std::endl;
+                Rcpp::Rcout << it << " retained chain's degree: " << retainedChain->degree;
+                Rcpp::Rcout << "   and delta: " << retainedChain->delta << std::endl;
 #endif
 
                 for (i = 0;i < retainedChain->degree;i++) {
                     fid = retainedChain->feat[i];
                     lid = retainedChain->label[i];
 #ifdef _DEBUG_FULL_
-                    std::cout << fid << ": " << sol[fid] << " -> " << lid << " Costs: " << inactiveCost[fid] << ":" << (sol[fid] != -1 ? labelpositions[sol[fid]]->cost : -1) << ":" << (lid != -1 ? labelpositions[lid]->cost : -1) <<  std::endl;
+                    Rcpp::Rcout << fid << ": " << sol[fid] << " -> " << lid << " Costs: " << inactiveCost[fid] << ":" << (sol[fid] != -1 ? labelpositions[sol[fid]]->cost : -1) << ":" << (lid != -1 ? labelpositions[lid]->cost : -1) <<  std::endl;
 #endif
 
                     if (sol[fid] >= 0)
@@ -2223,14 +2224,14 @@ namespace pal {
 
                     tabu_list[fid] = it + tenure;
 #ifdef _DEBUG_FULL_
-                    std::cout << "fid: " << fid << std::endl;
-                    std::cout << "borderSize: " << borderSize << std::endl;
-                    std::cout << "lid: " << lid << std::endl;
-                    std::cout << "sub[fid]: " << sub[fid] << std::endl;
-                    std::cout << "inactivecosr[sub[fid]]: " << inactiveCost[sub[fid]] << std::endl;
+                    Rcpp::Rcout << "fid: " << fid << std::endl;
+                    Rcpp::Rcout << "borderSize: " << borderSize << std::endl;
+                    Rcpp::Rcout << "lid: " << lid << std::endl;
+                    Rcpp::Rcout << "sub[fid]: " << sub[fid] << std::endl;
+                    Rcpp::Rcout << "inactivecosr[sub[fid]]: " << inactiveCost[sub[fid]] << std::endl;
                     if (lid > -1) {
-                        std::cout << "label[lid]: " << labelpositions[lid] << std::endl;
-                        std::cout << "label[lid]->cost: " << labelpositions[lid]->cost << std::endl;
+                        Rcpp::Rcout << "label[lid]: " << labelpositions[lid] << std::endl;
+                        Rcpp::Rcout << "label[lid]->cost: " << labelpositions[lid]->cost << std::endl;
                     }
 #endif
                     candidatesUnsorted[fid-borderSize]->cost = (lid == -1 ? inactiveCost[sub[fid]] : labelpositions[lid]->cost);
@@ -2238,23 +2239,23 @@ namespace pal {
                 }
 
 #ifdef _DEBUG_FULL_
-                std::cout << std::endl;
+                Rcpp::Rcout << std::endl;
 #endif
 
-                //std::cout << "old solution cost:" << cur_cost << std::endl;
+                //Rcpp::Rcout << "old solution cost:" << cur_cost << std::endl;
 
                 cur_cost += retainedChain->delta;
 
-                //std::cout << "new solution cost:" << cur_cost << std::endl;
+                //Rcpp::Rcout << "new solution cost:" << cur_cost << std::endl;
                 //int nbOv;
-                //std::cout << "computed solution cost:" << compute_subsolution_cost (part, sol, &nbOv) << std::endl;
-                //std::cout << "Overlap: " << nbOv << std::endl;
+                //Rcpp::Rcout << "computed solution cost:" << compute_subsolution_cost (part, sol, &nbOv) << std::endl;
+                //Rcpp::Rcout << "Overlap: " << nbOv << std::endl;
 
                 delete_chain (retainedChain);
 
                 if (best_cost - cur_cost > EPSILON) {
 #ifdef _DEBUG_FULL_
-                    std::cout << "new_best" << std::endl;
+                    Rcpp::Rcout << "new_best" << std::endl;
 #endif
                     best_cost = cur_cost;
                     memcpy (best_sol, sol, sizeof (int) *subSize);
@@ -2269,7 +2270,7 @@ namespace pal {
             }
 #ifdef _DEBUG_FULL_
             else {
-                std::cout << it << " no chain" << std::endl << std::endl;
+                Rcpp::Rcout << it << " no chain" << std::endl << std::endl;
             }
 #endif
             it++;
@@ -2321,7 +2322,7 @@ namespace pal {
 
         candidates_sol->Search (amin, amax, checkCallback, (void*) list);
 
-        std::cerr << "Check Solution" << std::endl;
+        Rcpp::Rcerr << "Check Solution" << std::endl;
 
         int i;
         int nbActive = 0;
@@ -2332,24 +2333,24 @@ namespace pal {
         }
 
         if (list->size() != nbActive) {
-            std::cerr << "Error in solution !!!!" << std::endl;
+            Rcpp::Rcerr << "Error in solution !!!!" << std::endl;
         }
 
         while (list->size() > 0) {
             lp = list->pop_front();
             if (solution[lp->probFeat] >= 0) {
-                std::cerr << "Doublon : " << lp->probFeat << " "
+                Rcpp::Rcerr << "Doublon : " << lp->probFeat << " "
                           << solution[lp->probFeat]  << "<->"
                           << lp->id << std::endl;
             }
 
             solution[lp->probFeat] = lp->id;
-            //std::cout << "lp->id:" << lp->id <<;
+            //Rcpp::Rcout << "lp->id:" << lp->id <<;
         }
 
         for (i = 0;i < nbft;i++) {
             if (solution[i] != sol->s[i]) {
-                std::cerr << "Feat " << i << " : " << solution[i] << "<-->" << sol->s[i] << std::endl;
+                Rcpp::Rcerr << "Feat " << i << " : " << solution[i] << "<-->" << sol->s[i] << std::endl;
             }
         }
     }
@@ -2419,14 +2420,14 @@ namespace pal {
 
 
 #ifdef _VERBOSE_
-        std::cout << "   Compute initial solution: " << (double) ( (init_sol_time = clock()) - start_time) / (double) CLOCKS_PER_SEC;
+        Rcpp::Rcout << "   Compute initial solution: " << (double) ( (init_sol_time = clock()) - start_time) / (double) CLOCKS_PER_SEC;
 #endif
 
         solution_cost();
 
 #ifdef _VERBOSE_
-        std::cerr << "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
-        std::cout << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive  << "(" << double (nbActive) / nbft << "%)" << std::endl;
+        Rcpp::Rcerr << "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
+        Rcpp::Rcout << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive  << "(" << double (nbActive) / nbft << "%)" << std::endl;
 #endif
 
         cur_cost = sol->cost;
@@ -2476,16 +2477,16 @@ namespace pal {
                     cur_cost += current_chain->delta;
 
 #ifdef _DEBUG_
-                    std::cout << "cur->cost: " << cur_cost << std::endl;
+                    Rcpp::Rcout << "cur->cost: " << cur_cost << std::endl;
                     solution_cost();
-                    std::cout << "computed cost: " << sol->cost << std::endl << std::endl;
+                    Rcpp::Rcout << "computed cost: " << sol->cost << std::endl << std::endl;
 #endif
 
                     /* check if new solution is a new best solution */
-                    //std::cout << "Costs : " << cur_cost <<" <--> " << best_cost << std::endl;
+                    //Rcpp::Rcout << "Costs : " << cur_cost <<" <--> " << best_cost << std::endl;
                     if (best_cost - cur_cost > EPSILON) {
-                        //std::cout << "New best : " << cur_cost <<" <--> " << best_cost << std::endl;
-                        //std::cout << "New best" << std::endl;
+                        //Rcpp::Rcout << "New best : " << cur_cost <<" <--> " << best_cost << std::endl;
+                        //Rcpp::Rcout << "New best" << std::endl;
                         best_cost = cur_cost;
                         memcpy (best_sol, sol->s, sizeof (int) *nbft);
 
@@ -2504,14 +2505,14 @@ namespace pal {
             if (sol->s[i] != -1)
                 labelpositions[sol->s[i]]->insertIntoIndex (candidates_sol);
 
-        std::cout << "Cost : " << cur_cost << std::endl;
+        Rcpp::Rcout << "Cost : " << cur_cost << std::endl;
 
         solution_cost();
 
 #ifdef _VERBOSE_
-        std::cout << "   Improved solution: " << (double) ( (search_time = clock()) - start_time) / (double) CLOCKS_PER_SEC << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive << " (" << (double) nbActive / (double) nbft << "%)" << std::endl;
+        Rcpp::Rcout << "   Improved solution: " << (double) ( (search_time = clock()) - start_time) / (double) CLOCKS_PER_SEC << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive << " (" << (double) nbActive / (double) nbft << "%)" << std::endl;
 
-        std::cerr << "\tna\tchain" << "\tna\t" << it << "\tna\t" << (init_sol_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - init_sol_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << sol->cost <<   "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
+        Rcpp::Rcerr << "\tna\tchain" << "\tna\t" << it << "\tna\t" << (init_sol_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - init_sol_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << sol->cost <<   "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
 #endif
 
         delete[] best_sol;
@@ -2565,15 +2566,15 @@ namespace pal {
         //check_solution();
 
 #ifdef _VERBOSE_
-        std::cout << "   Compute initial solution: " << (double) ( (init_sol_time = clock()) - start_time) / (double) CLOCKS_PER_SEC;
+        Rcpp::Rcout << "   Compute initial solution: " << (double) ( (init_sol_time = clock()) - start_time) / (double) CLOCKS_PER_SEC;
 #endif
 
         solution_cost();
 
 
 #ifdef _VERBOSE_
-        std::cerr << "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
-        std::cout << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive  << "(" << double (nbActive) / nbft << "%)" << std::endl;
+        Rcpp::Rcerr << "\t" << sol->cost << "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
+        Rcpp::Rcout << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive  << "(" << double (nbActive) / nbft << "%)" << std::endl;
 #endif
         int iter = 0;
 
@@ -2593,28 +2594,28 @@ namespace pal {
             iter = (iter + 1) % nbft;
 
 #ifdef _DEBUG_FULL_
-            std::cout << "Seed for it " << popit << " is " << seed << std::endl;
+            Rcpp::Rcout << "Seed for it " << popit << " is " << seed << std::endl;
 #endif
 
             retainedChain = chain (seed);
 
             if (retainedChain && retainedChain->delta < - EPSILON) {
 #ifdef _DEBUG_FULL_
-                std::cout << "chain's degree & delta : " << retainedChain->degree << "     " << retainedChain->delta << std::endl;
+                Rcpp::Rcout << "chain's degree & delta : " << retainedChain->degree << "     " << retainedChain->delta << std::endl;
 #endif
                 // apply modification
                 for (i = 0;i < retainedChain->degree;i++) {
                     fid = retainedChain->feat[i];
                     lid = retainedChain->label[i];
 #ifdef _DEBUG_FULL_
-                    std::cout << "   " << i << " :" << fid << " " << lid << std::endl;
-                    std::cout << "    sol->s[fid]: " << sol->s[fid] << " <=> " << lid << std::endl;
+                    Rcpp::Rcout << "   " << i << " :" << fid << " " << lid << std::endl;
+                    Rcpp::Rcout << "    sol->s[fid]: " << sol->s[fid] << " <=> " << lid << std::endl;
                     if (sol->s[fid] == -1 || lid == -1)
-                        std::cout << "feat inactive :" << inactiveCost[fid] << std::endl;
+                        Rcpp::Rcout << "feat inactive :" << inactiveCost[fid] << std::endl;
                     if (sol->s[fid] >= 0)
-                        std::cout << "old cost : " << labelpositions[sol->s[fid]]->cost << std::endl;
+                        Rcpp::Rcout << "old cost : " << labelpositions[sol->s[fid]]->cost << std::endl;
                     if (lid >= 0)
-                        std::cout << "new cost : " << labelpositions[lid]->cost << std::endl;
+                        Rcpp::Rcout << "new cost : " << labelpositions[lid]->cost << std::endl;
 #endif
 
                     if (sol->s[fid] >= 0) {
@@ -2651,9 +2652,9 @@ namespace pal {
                 }
                 sol->cost += retainedChain->delta;
 #ifdef _DEBUG_FULL_
-                std::cout << "Expected cost: " << sol->cost << std::endl;
+                Rcpp::Rcout << "Expected cost: " << sol->cost << std::endl;
                 solution_cost ();
-                std::cout << "chain iteration " << popit << ": " << sol->cost << ", " << retainedChain->delta << ", " << retainedChain->degree << std::endl;
+                Rcpp::Rcout << "chain iteration " << popit << ": " << sol->cost << ", " << retainedChain->delta << ", " << retainedChain->degree << std::endl;
 #endif
             } else {
                 // no chain or the one is not god enough
@@ -2665,17 +2666,17 @@ namespace pal {
         }
 
 #ifdef _DEBUG_FULL_
-        std::cout << "Cur_cost:  " << sol->cost << std::endl;
+        Rcpp::Rcout << "Cur_cost:  " << sol->cost << std::endl;
         sol->cost = 0;
 #endif
 
         solution_cost();
 
 #ifdef _VERBOSE_
-        std::cout << "   Improved solution: " << (double) ( (search_time = clock()) - start_time) / (double) CLOCKS_PER_SEC << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive << " (" << (double) nbActive / (double) nbft << "%)" << std::endl;
+        Rcpp::Rcout << "   Improved solution: " << (double) ( (search_time = clock()) - start_time) / (double) CLOCKS_PER_SEC << " (solution cost: " << sol->cost << ", nbDisplayed: " << nbActive << " (" << (double) nbActive / (double) nbft << "%)" << std::endl;
 
 
-        std::cerr << "\tna\tchain" << "\tna\t" << popit << "\tna\t" << (init_sol_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - init_sol_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << sol->cost <<   "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
+        Rcpp::Rcerr << "\tna\tchain" << "\tna\t" << popit << "\tna\t" << (init_sol_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - init_sol_time) / (double) CLOCKS_PER_SEC << "\t" << (search_time - start_time) / (double) CLOCKS_PER_SEC << "\t" << sol->cost <<   "\t" << nbActive << "\t" << (double) nbActive / (double) nbft;
 #endif
 
         delete[] ok;
@@ -2738,7 +2739,7 @@ namespace pal {
 
 #ifdef _DEBUG_FULL_
         cout << "Popmusic_chain" << std::endl;
-        std::cout << " initial cost" << initial_cost << std::endl;
+        Rcpp::Rcout << " initial cost" << initial_cost << std::endl;
 #endif
 
         // feature on border are ok
@@ -2762,17 +2763,17 @@ namespace pal {
             retainedChain = chain (part, seed);
 
 #ifdef _DEBUG_FULL_
-            std::cout << "   seed: " << seed << "(" << seed - borderSize << " / " << probSize << ")"  << std::endl;
-            std::cout << "   chain(seed)";
+            Rcpp::Rcout << "   seed: " << seed << "(" << seed - borderSize << " / " << probSize << ")"  << std::endl;
+            Rcpp::Rcout << "   chain(seed)";
             if (retainedChain) {
-                std::cout << " delta: " << retainedChain->delta << std::endl;
+                Rcpp::Rcout << " delta: " << retainedChain->delta << std::endl;
             } else
-                std::cout << ": undef" << std::endl;
+                Rcpp::Rcout << ": undef" << std::endl;
 #endif
 
             if (retainedChain && retainedChain->delta  < -EPSILON) {
 #ifdef _DEBUG_FULL_
-                std::cout << "     chain accepted " << std::endl;
+                Rcpp::Rcout << "     chain accepted " << std::endl;
 #endif
                 for (i = 0;i < retainedChain->degree;i++) {
                     fid = retainedChain->feat[i];
@@ -2811,9 +2812,9 @@ namespace pal {
 
                 cur_cost += retainedChain->delta;
 #ifdef _DEBUG_FULL_
-                std::cout << "    cur->cost: " << cur_cost << std::endl;
+                Rcpp::Rcout << "    cur->cost: " << cur_cost << std::endl;
                 int kov;
-                std::cout << "    computed cost: " << compute_subsolution_cost (part, sol, &kov) << std::endl << std::endl;
+                Rcpp::Rcout << "    computed cost: " << compute_subsolution_cost (part, sol, &kov) << std::endl << std::endl;
 #endif
             } else {
                 ok[seed] = true;
@@ -2828,7 +2829,7 @@ namespace pal {
         delete[] ok;
 
 #ifdef _DEBUG_FULL_
-        std::cout << "Final cost : " << cur_cost << " (" << initial_cost - cur_cost << ")" << std::endl;
+        Rcpp::Rcout << "Final cost : " << cur_cost << " (" << initial_cost - cur_cost << ")" << std::endl;
 #endif
 
         return initial_cost - cur_cost;
@@ -2891,7 +2892,7 @@ namespace pal {
                     stats->nbLabelledObjects++;
                 }
             } else {
-                std::cerr << "Error unknown layers while computing stats: " << lyrName << std::endl;
+                Rcpp::Rcerr << "Error unknown layers while computing stats: " << lyrName << std::endl;
             }
         }
 
@@ -2967,7 +2968,7 @@ namespace pal {
     void Problem::solution_cost() {
 
 #ifdef _DEBUG_FULL_
-        std::cout << "Global solution evaluation" << std::endl;
+        Rcpp::Rcout << "Global solution evaluation" << std::endl;
 #endif
 
         sol->cost = 0.0;
@@ -3022,10 +3023,10 @@ namespace pal {
 
 #ifdef _DEBUG_
         if (nbActive + nbHidden != nbft) {
-            std::cout << "Conflicts in solution: " << nbHidden / 2 << std::endl;
+            Rcpp::Rcout << "Conflicts in solution: " << nbHidden / 2 << std::endl;
         }
-        std::cout << "nbActive and free: " << nbActive << " (" << double (nbActive) / double (nbft) << " %)" << std::endl;
-        std::cout << "solution cost:" << sol->cost << std::endl;
+        Rcpp::Rcout << "nbActive and free: " << nbActive << " (" << double (nbActive) / double (nbft) << " %)" << std::endl;
+        Rcpp::Rcout << "solution cost:" << sol->cost << std::endl;
 #endif
     }
 
