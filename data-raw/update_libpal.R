@@ -45,12 +45,15 @@ for (file in list.files("data-raw/pal-src", full.names = TRUE)) {
 
   file_txt <- read_file(file)
 
+  # fix code in the form cout|cerr << ... and exit(...)
   if(str_detect(file_txt, "std::(cout|cerr)")) {
     file_txt <- file_txt %>%
       str_replace("^", "#include <Rcpp.h>\n") %>%
-      str_replace_all("std::(cout|cerr)", "Rcpp::R\\1")
+      str_replace_all("std::(cout|cerr)", "Rcpp::R\\1") %>%
+      str_replace_all("exit\\s*\\([^)]*\\)", 'Rcpp::stop("\\0")')
   }
 
+  # fix code in the form v?fprintf((stderr|stdout))
   if(str_detect(file_txt, "printf.*?(stderr|stdout)")) {
     file_txt <- file_txt %>%
       str_replace("^", "#include <R.h>\n") %>%

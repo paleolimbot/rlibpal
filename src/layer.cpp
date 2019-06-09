@@ -329,7 +329,7 @@ void Layer::registerFeature (const char *geom_id, PalGeometry *userGeom, double 
 #ifdef _VERBOSE_
                 Rcpp::Rcerr << "Wrong geometry type, should never occurs !!" << std::endl;
 #endif
-                exit (-1);
+                Rcpp::stop("exit (-1)");
             }
 
             double bmin[2];
